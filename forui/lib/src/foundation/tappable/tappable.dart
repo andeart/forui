@@ -34,6 +34,8 @@ typedef FTappableVariantChangeCallback = void Function(Set<FTappableVariant> pre
 ///
 /// It is typically used to create other high-level widgets, i.e., [FButton]. Unless you are creating a custom widget,
 /// you should use those high-level widgets instead.
+///
+/// {@macro forui.foundation.FTappableGroup.overlay}
 class FTappable extends StatefulWidget {
   static Widget _builder(BuildContext _, Set<FTappableVariant> _, Widget? child) => child!;
 
@@ -266,6 +268,7 @@ class _FTappableState<T extends FTappable> extends State<T> {
   late FTappableStyle _style;
   late FocusNode _focus;
   late Set<FTappableVariant> _current;
+  FTappableVariant? _platform;
   int _monotonic = 0;
   int _buttons = 0;
   List<GroupEntry>? _entries;
@@ -287,7 +290,12 @@ class _FTappableState<T extends FTappable> extends State<T> {
     super.didChangeDependencies();
     _style = widget.style(context.theme.tappableStyle);
     // This cast is always fine since extension types are erased at runtime.
-    _current.add(context.platformVariant as FTappableVariant);
+    if (context.platformVariant case final FTappableVariant platform when _platform != platform) {
+      _current
+        ..remove(_platform)
+        ..add(platform);
+      _platform = platform;
+    }
 
     final entries = TappableGroupScope.maybeOf(context);
     if (entries != _entries) {

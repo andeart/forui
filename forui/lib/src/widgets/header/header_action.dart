@@ -180,7 +180,7 @@ class FHeaderAction extends StatelessWidget {
       shortcuts: shortcuts,
       actions: actions,
       builder: (_, variants, child) => IconTheme(data: style.iconStyle.resolve(variants), child: child!),
-      child: icon,
+      child: Padding(padding: style.padding, child: icon),
     );
   }
 
@@ -213,6 +213,10 @@ class FHeaderActionStyle with Diagnosticable, _$FHeaderActionStyleFunctions {
   @override
   final FVariants<FTappableVariantConstraint, FTappableVariant, IconThemeData, IconThemeDataDelta> iconStyle;
 
+  /// The padding around the icon.
+  @override
+  final EdgeInsetsGeometry padding;
+
   /// The outline style when this action is focused.
   @override
   final FFocusedOutlineStyle focusedOutlineStyle;
@@ -222,16 +226,29 @@ class FHeaderActionStyle with Diagnosticable, _$FHeaderActionStyleFunctions {
   final FTappableStyle tappableStyle;
 
   /// Creates a [FHeaderActionStyle].
-  FHeaderActionStyle({required this.iconStyle, required this.focusedOutlineStyle, required this.tappableStyle});
+  FHeaderActionStyle({
+    required this.iconStyle,
+    required this.padding,
+    required this.focusedOutlineStyle,
+    required this.tappableStyle,
+  });
 
   /// Creates a [FHeaderActionStyle] that inherits its properties.
-  FHeaderActionStyle.inherit({required FColors colors, required FStyle style, required double size})
-    : iconStyle = FVariants.from(
-        IconThemeData(color: colors.foreground, size: size),
-        variants: {
-          [.disabled]: .delta(color: colors.disable(colors.foreground)),
-        },
-      ),
-      focusedOutlineStyle = style.focusedOutlineStyle,
-      tappableStyle = style.tappableStyle;
+  FHeaderActionStyle.inherit({
+    required FColors colors,
+    required FStyle style,
+    required double size,
+    required EdgeInsetsGeometry padding,
+  }) : this(
+         iconStyle: FVariants.from(
+           IconThemeData(color: colors.foreground, size: size),
+           variants: {
+             [.hovered, .pressed]: .delta(color: colors.hover(colors.foreground)),
+             [.disabled]: .delta(color: colors.disable(colors.foreground)),
+           },
+         ),
+         padding: padding,
+         focusedOutlineStyle: style.focusedOutlineStyle,
+         tappableStyle: style.tappableStyle,
+       );
 }

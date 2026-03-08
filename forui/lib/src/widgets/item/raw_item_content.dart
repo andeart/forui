@@ -18,7 +18,8 @@ class RawItemContent extends StatelessWidget {
   final double top;
   final double bottom;
   final Set<FTappableVariant> variants;
-  final FVariants<FItemGroupVariantConstraint, FItemGroupVariant, Color, Delta>? dividerColor;
+  final FVariants<FItemGroupVariantConstraint, FItemGroupVariant, Color, Delta>? dividerForeground;
+  final Color? dividerBackground;
   final double? dividerWidth;
   final FItemDivider dividerType;
   final Widget? prefix;
@@ -30,16 +31,17 @@ class RawItemContent extends StatelessWidget {
     required this.bottom,
     required this.top,
     required this.variants,
-    required this.dividerColor,
+    required this.dividerForeground,
+    required this.dividerBackground,
     required this.dividerWidth,
     required this.dividerType,
     required this.prefix,
     required this.child,
     super.key,
   }) : assert(
-         (dividerColor != null && dividerWidth != null) || dividerType == FItemDivider.none,
-         'dividerColor and dividerWidth must be provided if dividerType is not FItemDivider.none. This is a bug unless '
-         "you're creating your own custom item container.",
+         (dividerForeground != null && dividerWidth != null) || dividerType == FItemDivider.none,
+         'dividerForeground and dividerWidth must be provided if dividerType is not FItemDivider.none. This is a bug '
+         "unless you're creating your own custom item container.",
        );
 
   @override
@@ -48,7 +50,8 @@ class RawItemContent extends StatelessWidget {
     padding: style.padding,
     top: top,
     bottom: bottom,
-    dividerColor: dividerColor?.resolve(variants),
+    dividerColor: dividerForeground?.resolve(variants),
+    dividerBackgroundColor: dividerBackground,
     dividerWidth: dividerWidth,
     dividerType: dividerType,
     children: [
@@ -79,7 +82,8 @@ class RawItemContent extends StatelessWidget {
       ..add(IterableProperty('variants', variants))
       ..add(DoubleProperty('top', top))
       ..add(DoubleProperty('bottom', bottom))
-      ..add(DiagnosticsProperty('dividerColor', dividerColor))
+      ..add(DiagnosticsProperty('dividerForeground', dividerForeground))
+      ..add(ColorProperty('dividerBackground', dividerBackground))
       ..add(DoubleProperty('dividerWidth', dividerWidth))
       ..add(DiagnosticsProperty('dividerType', dividerType));
   }
@@ -87,7 +91,7 @@ class RawItemContent extends StatelessWidget {
 
 /// An [FItem] raw content's style.
 class FRawItemContentStyle with Diagnosticable, _$FRawItemContentStyleFunctions {
-  /// The content's padding. Defaults to `EdgeInsetsDirectional.only(15, 13, 10, 13)`.
+  /// The content's padding.
   @override
   final EdgeInsetsGeometry padding;
 
@@ -110,8 +114,8 @@ class FRawItemContentStyle with Diagnosticable, _$FRawItemContentStyleFunctions 
   FRawItemContentStyle({
     required this.prefixIconStyle,
     required this.childTextStyle,
-    this.padding = const .directional(start: 15, top: 7.5, bottom: 7.5, end: 10),
-    this.prefixIconSpacing = 10,
+    required this.padding,
+    this.prefixIconSpacing = 8,
   }) : assert(0 <= prefixIconSpacing, 'prefixIconSpacing ($prefixIconSpacing) must be >= 0');
 
   /// Creates a [FRawItemContentStyle] that inherits its properties.
@@ -120,9 +124,10 @@ class FRawItemContentStyle with Diagnosticable, _$FRawItemContentStyleFunctions 
     required FTypography typography,
     required Color prefix,
     required Color color,
+    required EdgeInsetsGeometry padding,
   }) : this(
-         prefixIconStyle: FVariants.from(
-           IconThemeData(color: prefix, size: 15),
+         prefixIconStyle: .from(
+           IconThemeData(color: prefix, size: typography.md.fontSize),
            variants: {
              [.disabled]: .delta(color: colors.disable(prefix)),
            },
@@ -133,5 +138,6 @@ class FRawItemContentStyle with Diagnosticable, _$FRawItemContentStyleFunctions 
              [.disabled]: typography.sm.copyWith(color: colors.disable(color)),
            },
          ),
+         padding: padding,
        );
 }

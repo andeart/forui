@@ -256,7 +256,7 @@ class FSelectGroupStyle extends FLabelStyle with Diagnosticable, _$FSelectGroupS
   @override
   final FRadioStyle radioStyle;
 
-  /// The padding surrounding an item. Defaults to `EdgeInsets.symmetric(vertical: 2)`.
+  /// The padding surrounding an item. Defaults to `EdgeInsets.symmetric(vertical: 4)`.
   @override
   final EdgeInsetsGeometry itemPadding;
 
@@ -267,7 +267,7 @@ class FSelectGroupStyle extends FLabelStyle with Diagnosticable, _$FSelectGroupS
     required super.labelTextStyle,
     required super.descriptionTextStyle,
     required super.errorTextStyle,
-    this.itemPadding = const .symmetric(vertical: 2),
+    this.itemPadding = const .symmetric(vertical: 4),
     super.labelPadding,
     super.descriptionPadding,
     super.errorPadding,
@@ -276,7 +276,12 @@ class FSelectGroupStyle extends FLabelStyle with Diagnosticable, _$FSelectGroupS
   });
 
   /// Creates a [FSelectGroupStyle] that inherits its properties.
-  factory FSelectGroupStyle.inherit({required FColors colors, required FTypography typography, required FStyle style}) {
+  factory FSelectGroupStyle.inherit({
+    required FColors colors,
+    required FTypography typography,
+    required FStyle style,
+    required bool touch,
+  }) {
     final vertical = FLabelStyles.inherit(style: style).verticalStyle;
 
     final itemLabelTextStyle =
@@ -305,12 +310,12 @@ class FSelectGroupStyle extends FLabelStyle with Diagnosticable, _$FSelectGroupS
         );
 
     return .new(
-      checkboxStyle: .inherit(colors: colors, style: style).copyWith(
+      checkboxStyle: .inherit(colors: colors, style: style, touch: touch).copyWith(
         labelTextStyle: itemLabelTextStyle,
         descriptionTextStyle: itemDescriptionTextStyle,
         errorTextStyle: itemErrorTextStyle,
       ),
-      radioStyle: .inherit(colors: colors, style: style).copyWith(
+      radioStyle: .inherit(colors: colors, style: style, touch: touch).copyWith(
         labelTextStyle: itemLabelTextStyle,
         descriptionTextStyle: itemDescriptionTextStyle,
         errorTextStyle: itemErrorTextStyle,

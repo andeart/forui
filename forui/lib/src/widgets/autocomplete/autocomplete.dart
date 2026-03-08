@@ -15,8 +15,6 @@ import 'package:forui/src/widgets/autocomplete/autocomplete_controller.dart';
 import 'package:forui/src/widgets/autocomplete/skip_delegate_traversal_policy.dart';
 import 'package:forui/src/widgets/popover/popover_controller.dart';
 
-part 'autocomplete.design.dart';
-
 /// A builder for [FAutocomplete]'s results.
 typedef FAutoCompleteContentBuilder =
     List<FAutocompleteItemMixin> Function(BuildContext context, String query, Iterable<String> values);
@@ -61,6 +59,9 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
   ///
   /// Defaults to [FPopoverControl.managed].
   final FPopoverControl popoverControl;
+
+  /// {@macro forui.text_field.size}
+  final FTextFieldSizeVariant size;
 
   /// The style.
   ///
@@ -329,6 +330,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     required List<String> items,
     FAutocompleteControl control = const .managed(),
     FPopoverControl popoverControl = const .managed(),
+    FTextFieldSizeVariant size = .md,
     FAutocompleteStyleDelta style = const .context(),
     Widget? label,
     String? hint,
@@ -417,6 +419,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
              contentBuilder ?? (context, query, values) => [for (final value in values) .item(value: value)],
          control: control,
          popoverControl: popoverControl,
+         size: size,
          style: style,
          label: label,
          hint: hint,
@@ -504,6 +507,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     required this.contentBuilder,
     this.control = const .managed(),
     this.popoverControl = const .managed(),
+    this.size = .md,
     this.style = const .context(),
     this.label,
     this.hint,
@@ -593,6 +597,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     properties
       ..add(DiagnosticsProperty('control', control))
       ..add(DiagnosticsProperty('popoverControl', popoverControl))
+      ..add(DiagnosticsProperty('size', size))
       ..add(DiagnosticsProperty('style', style))
       ..add(StringProperty('hint', hint))
       ..add(DiagnosticsProperty('magnifierConfiguration', magnifierConfiguration))
@@ -792,6 +797,8 @@ class _State extends State<FAutocomplete> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final style = widget.style(context.theme.autocompleteStyle);
+    final fieldStyle = style.fieldStyles.resolve({widget.size, context.platformVariant});
+
     // On desktop, the textfield selects the entire text when focused (except when tapped). However, refocusing on the
     // textfield after keyboard navigation of completions should NOT select the entire text.
     //
@@ -809,7 +816,8 @@ class _State extends State<FAutocomplete> with TickerProviderStateMixin {
       },
       child: FTextFormField(
         control: .managed(controller: _controller),
-        style: style.fieldStyle,
+        size: widget.size,
+        style: fieldStyle,
         label: widget.label,
         hint: widget.hint,
         description: widget.description,
@@ -925,8 +933,8 @@ class _State extends State<FAutocomplete> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            child: InheritedAutocompleteStyle(
-              style: style,
+            child: AutocompleteFieldScope(
+              style: fieldStyle,
               variants: variants,
               child: CallbackShortcuts(
                 bindings: {
@@ -959,23 +967,23 @@ class _State extends State<FAutocomplete> with TickerProviderStateMixin {
 }
 
 @internal
-final class InheritedAutocompleteStyle extends InheritedWidget {
+final class AutocompleteFieldScope extends InheritedWidget {
   @useResult
-  static InheritedAutocompleteStyle of(BuildContext context) {
-    assert(debugCheckHasAncestor<InheritedAutocompleteStyle>('FAutocomplete', context));
-    return context.dependOnInheritedWidgetOfExactType<InheritedAutocompleteStyle>()!;
+  static AutocompleteFieldScope of(BuildContext context) {
+    assert(debugCheckHasAncestor<AutocompleteFieldScope>('FAutocomplete', context));
+    return context.dependOnInheritedWidgetOfExactType<AutocompleteFieldScope>()!;
   }
 
-  /// The autocomplete style.
-  final FAutocompleteStyle style;
+  /// The autocomplete field style.
+  final FAutocompleteFieldStyle style;
 
   /// The current widget variants.
   final Set<FTextFieldVariant> variants;
 
-  const InheritedAutocompleteStyle({required this.style, required this.variants, required super.child, super.key});
+  const AutocompleteFieldScope({required this.style, required this.variants, required super.child, super.key});
 
   @override
-  bool updateShouldNotify(InheritedAutocompleteStyle old) => style != old.style || variants != old.variants;
+  bool updateShouldNotify(AutocompleteFieldScope old) => style != old.style || variants != old.variants;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -983,54 +991,5 @@ final class InheritedAutocompleteStyle extends InheritedWidget {
     properties
       ..add(DiagnosticsProperty('style', style))
       ..add(DiagnosticsProperty('variants', variants));
-  }
-}
-
-/// An [FAutocomplete]'s style.
-class FAutocompleteStyle with Diagnosticable, _$FAutocompleteStyleFunctions {
-  /// The select field's style.
-  @override
-  final FTextFieldStyle fieldStyle;
-
-  /// The composing text's [TextStyle].
-  ///
-  /// {@template forui.text_field.composingTextStyle}
-  /// It is strongly recommended that [FTextFieldStyle.contentTextStyle], [composingTextStyle] and [typeaheadTextStyle]
-  /// are the same size to prevent visual discrepancies between the actual and typeahead text.
-  /// {@endtemplate}
-  @override
-  final FVariants<FTextFieldVariantConstraint, FTextFieldVariant, TextStyle, TextStyleDelta> composingTextStyle;
-
-  /// The typeahead's [TextStyle].
-  ///
-  /// {@macro forui.text_field.composingTextStyle}
-  @override
-  final FVariants<FTextFieldVariantConstraint, FTextFieldVariant, TextStyle, TextStyleDelta> typeaheadTextStyle;
-
-  /// The content's style.
-  @override
-  final FAutocompleteContentStyle contentStyle;
-
-  /// Creates a [FAutocompleteStyle].
-  FAutocompleteStyle({
-    required this.fieldStyle,
-    required this.composingTextStyle,
-    required this.typeaheadTextStyle,
-    required this.contentStyle,
-  });
-
-  /// Creates a [FAutocompleteStyle] that inherits its properties.
-  factory FAutocompleteStyle.inherit({
-    required FColors colors,
-    required FTypography typography,
-    required FStyle style,
-  }) {
-    final field = FTextFieldStyle.inherit(colors: colors, typography: typography, style: style);
-    return .new(
-      fieldStyle: field,
-      composingTextStyle: field.contentTextStyle.apply([.all(.delta(decoration: () => .underline))]),
-      typeaheadTextStyle: field.contentTextStyle.apply([.all(.delta(color: colors.mutedForeground))]),
-      contentStyle: .inherit(colors: colors, typography: typography, style: style),
-    );
   }
 }

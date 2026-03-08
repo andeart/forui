@@ -118,7 +118,7 @@ void main() {
             key: key,
             format: Text.new,
             style: TestScaffold.blueScreen.multiSelectStyle.copyWith(
-              searchStyle: const .delta(fieldStyle: .delta(cursorColor: Color(0xFF03A9F4))),
+              searchStyle: .delta(fieldStyles: .delta([.all(const .delta(cursorColor: Color(0xFF03A9F4)))])),
             ),
             contentScrollHandles: true,
             filter: (_) => [],
@@ -140,7 +140,7 @@ void main() {
             key: key,
             format: Text.new,
             style: TestScaffold.blueScreen.multiSelectStyle.copyWith(
-              searchStyle: const .delta(fieldStyle: .delta(cursorColor: Color(0xFF03A9F4))),
+              searchStyle: .delta(fieldStyles: .delta([.all(const .delta(cursorColor: Color(0xFF03A9F4)))])),
             ),
             contentScrollHandles: true,
             filter: (_) async {
@@ -165,7 +165,7 @@ void main() {
             {for (int i = 0; i < 10; i++) '$i': i},
             key: key,
             style: TestScaffold.blueScreen.multiSelectStyle.copyWith(
-              searchStyle: const .delta(fieldStyle: .delta(cursorColor: Color(0xFF03A9F4))),
+              searchStyle: .delta(fieldStyles: .delta([.all(const .delta(cursorColor: Color(0xFF03A9F4)))])),
             ),
             contentScrollHandles: true,
             filter: (_) => [],
@@ -503,4 +503,31 @@ void main() {
 
     await expectLater(find.byType(TestScaffold), matchesGoldenFile('multi-select/sort.png'));
   });
+
+  for (final (theme, name) in [(FThemes.neutral.light.desktop, 'desktop'), (FThemes.neutral.light.touch, 'touch')]) {
+    testWidgets('$name sizes', (tester) async {
+      await tester.pumpWidget(
+        TestScaffold.app(
+          theme: theme,
+          alignment: .topCenter,
+          child: Column(
+            spacing: 8,
+            mainAxisSize: .min,
+            children: [
+              for (final size in [FTextFieldSizeVariant.sm, FTextFieldSizeVariant.md, FTextFieldSizeVariant.lg]) ...[
+                FMultiSelect(
+                  control: const .managed(initial: {'Apple'}),
+                  size: size,
+                  items: letters,
+                  hint: const Text('Fruits'),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+
+      await expectLater(find.byType(TestScaffold), matchesGoldenFile('multi-select/$name-sizes.png'));
+    });
+  }
 }

@@ -32,6 +32,7 @@ class Input extends StatefulWidget {
   }
 
   final TextEditingController controller;
+  final FTextFieldSizeVariant size;
   final FTextFieldStyleDelta style;
   final FFieldBuilder<FTextFieldStyle> builder;
   final Widget? label;
@@ -115,6 +116,7 @@ class Input extends StatefulWidget {
     required this.canRequestFocus,
     required this.clearable,
     required this.clearIconBuilder,
+    required this.size,
     required this.style,
     this.label,
     this.hint,
@@ -166,6 +168,7 @@ class Input extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('controller', controller))
+      ..add(DiagnosticsProperty('size', size))
       ..add(ObjectFlagProperty.has('style', style))
       ..add(ObjectFlagProperty.has('builder', builder))
       ..add(StringProperty('hint', hint))
@@ -256,6 +259,9 @@ class _InputState extends State<Input> {
     super.initState();
     _statesController = widget.statesController ?? .new();
     _statesController.addListener(_handleStatesChange);
+    if (widget.clearable != Input.defaultClearable) {
+      widget.controller.addListener(_handleTextChange);
+    }
     _error = widget.error ?? const SizedBox();
   }
 
@@ -274,6 +280,13 @@ class _InputState extends State<Input> {
       _error = widget.error ?? const SizedBox();
     }
 
+    if (widget.clearable != old.clearable || widget.controller != old.controller) {
+      old.controller.removeListener(_handleTextChange);
+      if (widget.clearable != Input.defaultClearable) {
+        widget.controller.addListener(_handleTextChange);
+      }
+    }
+
     if (widget.error != null && old.error != null) {
       // Error content changed but controller won't fire (both non-null)
       _error = widget.error ?? const SizedBox();
@@ -288,9 +301,15 @@ class _InputState extends State<Input> {
     }
   });
 
+  void _handleTextChange() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final style = widget.style(context.theme.textFieldStyle);
+    final style = widget.style(context.theme.textFieldStyles.resolve({widget.size, context.platformVariant}));
     final variants = toTextFieldVariants(context.platformVariant, _statesController.value);
 
     final textfield = TextField(
@@ -460,6 +479,7 @@ class _InputState extends State<Input> {
 
   @override
   void dispose() {
+    widget.controller.removeListener(_handleTextChange);
     if (widget.statesController == null) {
       _statesController.dispose();
     } else {

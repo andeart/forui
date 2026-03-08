@@ -44,9 +44,9 @@ part 'picker/picker_time_field.dart';
 /// * [FTimeFieldStyle] for customizing a time field's appearance.
 abstract class FTimeField extends StatefulWidget {
   /// The default prefix builder that shows a clock icon.
-  static Widget defaultIconBuilder(BuildContext _, FTimeFieldStyle style, Set<FTextFieldVariant> variants) => Padding(
-    padding: const EdgeInsetsDirectional.only(start: 14.0, end: 8.0),
-    child: IconTheme(data: style.fieldStyle.iconStyle.resolve(variants), child: const Icon(FIcons.clock4)),
+  static Widget defaultIconBuilder(BuildContext _, FTextFieldStyle style, Set<FTextFieldVariant> variants) => Padding(
+    padding: const EdgeInsetsDirectional.only(start: 12.0, end: 4.0),
+    child: IconTheme(data: style.iconStyle.resolve(variants), child: const Icon(FIcons.clock4)),
   );
 
   static Widget _fieldBuilder(BuildContext _, FTimeFieldStyle _, Set<FTextFieldVariant> _, Widget child) => child;
@@ -58,6 +58,9 @@ abstract class FTimeField extends StatefulWidget {
   ///
   /// Defaults to [FPopoverControl.managed].
   final FPopoverControl popoverControl;
+
+  /// {@macro forui.text_field.size}
+  final FTextFieldSizeVariant size;
 
   /// The style.
   ///
@@ -97,11 +100,14 @@ abstract class FTimeField extends StatefulWidget {
 
   /// Builds a widget at the start of the input field that can be pressed to toggle the popover. Defaults to
   /// [defaultIconBuilder].
-  final FFieldIconBuilder<FTimeFieldStyle>? prefixBuilder;
+  final FFieldIconBuilder<FTextFieldStyle>? prefixBuilder;
 
   /// Builds a widget at the end of the input field that can be pressed to toggle the popover. Defaults to
   /// no suffix.
-  final FFieldIconBuilder<FTimeFieldStyle>? suffixBuilder;
+  final FFieldIconBuilder<FTextFieldStyle>? suffixBuilder;
+
+  /// If true, the input field will show a clear button when a time is selected. Defaults to false.
+  final bool clearable;
 
   /// The label.
   final Widget? label;
@@ -143,6 +149,7 @@ abstract class FTimeField extends StatefulWidget {
   const FTimeField._({
     this.control = const .managed(),
     this.popoverControl = const .managed(),
+    this.size = .md,
     this.style = const .context(),
     this.hour24 = false,
     this.autofocus = false,
@@ -150,6 +157,7 @@ abstract class FTimeField extends StatefulWidget {
     this.builder = _fieldBuilder,
     this.prefixBuilder = defaultIconBuilder,
     this.suffixBuilder,
+    this.clearable = false,
     this.label,
     this.description,
     this.enabled = true,
@@ -182,18 +190,22 @@ abstract class FTimeField extends StatefulWidget {
   ///
   /// If [canRequestFocus] is false, the input field cannot obtain focus but can still be selected.
   ///
+  /// If [clearable] is true, the input field will show a clear button when a time is selected. Defaults to false.
+  ///
   /// See also:
   /// * [FTimeField.picker] - Creates a time field with only a picker.
   const factory FTimeField({
     FTimeFieldControl control,
     FPopoverControl popoverControl,
+    FTextFieldSizeVariant size,
     FTimeFieldStyleDelta style,
     bool hour24,
     bool autofocus,
     FocusNode? focusNode,
     FFieldBuilder<FTimeFieldStyle> builder,
-    FFieldIconBuilder<FTimeFieldStyle>? prefixBuilder,
-    FFieldIconBuilder<FTimeFieldStyle>? suffixBuilder,
+    FFieldIconBuilder<FTextFieldStyle>? prefixBuilder,
+    FFieldIconBuilder<FTextFieldStyle>? suffixBuilder,
+    bool clearable,
     TextInputAction? textInputAction,
     TextAlign textAlign,
     TextAlignVertical? textAlignVertical,
@@ -257,11 +269,14 @@ abstract class FTimeField extends StatefulWidget {
   /// [hourInterval] and [minuteInterval] control the increment/decrement interval of the hour and minute respectively.
   /// Default to 1.
   ///
+  /// If [clearable] is true, the input field will show a clear button when a time is selected. Defaults to false.
+  ///
   /// See also:
   /// * [FTimeField.new] - Creates a time field with only an input field.
   const factory FTimeField.picker({
     FTimeFieldControl control,
     FPopoverControl popoverControl,
+    FTextFieldSizeVariant size,
     FTimeFieldStyleDelta style,
     bool hour24,
     DateFormat? format,
@@ -286,8 +301,9 @@ abstract class FTimeField extends StatefulWidget {
     int hourInterval,
     int minuteInterval,
     FFieldBuilder<FTimeFieldStyle> builder,
-    FFieldIconBuilder<FTimeFieldStyle>? prefixBuilder,
-    FFieldIconBuilder<FTimeFieldStyle>? suffixBuilder,
+    FFieldIconBuilder<FTextFieldStyle>? prefixBuilder,
+    FFieldIconBuilder<FTextFieldStyle>? suffixBuilder,
+    bool clearable,
     Widget? label,
     Widget? description,
     bool enabled,
@@ -305,6 +321,7 @@ abstract class FTimeField extends StatefulWidget {
     properties
       ..add(DiagnosticsProperty('control', control))
       ..add(DiagnosticsProperty('popoverControl', popoverControl))
+      ..add(DiagnosticsProperty('size', size))
       ..add(DiagnosticsProperty('style', style))
       ..add(FlagProperty('hour24', value: hour24, ifTrue: 'hour24'))
       ..add(FlagProperty('autofocus', value: autofocus, ifTrue: 'autofocus'))
@@ -312,6 +329,7 @@ abstract class FTimeField extends StatefulWidget {
       ..add(ObjectFlagProperty.has('builder', builder))
       ..add(ObjectFlagProperty.has('prefixBuilder', prefixBuilder))
       ..add(ObjectFlagProperty.has('suffixBuilder', suffixBuilder))
+      ..add(FlagProperty('clearable', value: clearable, ifTrue: 'clearable'))
       ..add(ObjectFlagProperty.has('errorBuilder', errorBuilder))
       ..add(FlagProperty('enabled', value: enabled, ifFalse: 'disabled'))
       ..add(ObjectFlagProperty.has('onSaved', onSaved))

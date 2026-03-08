@@ -14,7 +14,7 @@ part 'time_picker.design.dart';
 
 /// A time picker that allows a time to be selected.
 ///
-/// Recommended for touch devices.
+/// Recommended for touch devices. Prefer [FTimeField] on desktop.
 ///
 /// The time picker supports arrow key navigation:
 /// * Up/Down arrows: Increment/decrement selected value
@@ -174,7 +174,7 @@ class FTimePickerStyle extends FPickerStyle with _$FTimePickerStyleFunctions {
   /// Creates a [FTimePickerStyle] that inherits its properties.
   FTimePickerStyle.inherit({required FColors colors, required FStyle style, required FTypography typography})
     : this(
-        textStyle: typography.md.copyWith(fontWeight: .w500),
+        textStyle: typography.sm.copyWith(fontWeight: .w500),
         selectionDecoration: ShapeDecoration(
           shape: RoundedSuperellipseBorder(borderRadius: style.borderRadius.md),
           color: colors.muted,

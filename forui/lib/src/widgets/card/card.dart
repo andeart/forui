@@ -97,18 +97,39 @@ class FCardStyle with Diagnosticable, _$FCardStyleFunctions {
   FCardStyle({required this.decoration, required this.contentStyle});
 
   /// Creates a [FCardStyle] that inherits its properties.
-  FCardStyle.inherit({required FColors colors, required FTypography typography, required FStyle style})
-    : this(
-        decoration: ShapeDecoration(
-          shape: RoundedSuperellipseBorder(
-            side: BorderSide(color: colors.border, width: style.borderWidth),
-            borderRadius: style.borderRadius.md,
-          ),
-          color: colors.card,
+  factory FCardStyle.inherit({
+    required FColors colors,
+    required FTypography typography,
+    required FStyle style,
+    required bool touch,
+  }) {
+    TextStyle titleTextStyle;
+    double titleSpacing;
+    double subtitleSpacing;
+    if (touch) {
+      titleTextStyle = typography.lg.copyWith(fontWeight: .w500, color: colors.foreground);
+      titleSpacing = 4;
+      subtitleSpacing = 8;
+    } else {
+      titleTextStyle = typography.md.copyWith(fontWeight: .w500, color: colors.foreground);
+      titleSpacing = 2;
+      subtitleSpacing = 6;
+    }
+
+    return FCardStyle(
+      decoration: ShapeDecoration(
+        shape: RoundedSuperellipseBorder(
+          side: BorderSide(color: colors.border, width: style.borderWidth),
+          borderRadius: style.borderRadius.lg,
         ),
-        contentStyle: FCardContentStyle(
-          titleTextStyle: typography.xl2.copyWith(fontWeight: .w600, color: colors.foreground, height: 1.5),
-          subtitleTextStyle: typography.sm.copyWith(color: colors.mutedForeground),
-        ),
-      );
+        color: colors.card,
+      ),
+      contentStyle: FCardContentStyle(
+        titleTextStyle: titleTextStyle,
+        subtitleTextStyle: typography.sm.copyWith(color: colors.mutedForeground),
+        titleSpacing: titleSpacing,
+        subtitleSpacing: subtitleSpacing,
+      ),
+    );
+  }
 }

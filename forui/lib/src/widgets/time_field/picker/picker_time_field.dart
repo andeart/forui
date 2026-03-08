@@ -55,6 +55,7 @@ class _PickerTimeField extends FTimeField implements FTimeFieldPickerProperties 
     this.minuteInterval = 1,
     super.control,
     super.popoverControl,
+    super.size,
     super.style,
     super.hour24,
     super.autofocus,
@@ -62,6 +63,7 @@ class _PickerTimeField extends FTimeField implements FTimeFieldPickerProperties 
     super.builder,
     super.prefixBuilder,
     super.suffixBuilder,
+    super.clearable,
     super.label,
     super.description,
     super.enabled = true,
@@ -95,6 +97,12 @@ class _PickerTimeFieldState extends _FTimeFieldState<_PickerTimeField> {
   final TextEditingController _textController = .new();
   late FocusNode _focus = widget.focusNode ?? .new(debugLabel: 'FTimeField');
   DateFormat? _format;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController.addListener(_onTextChange);
+  }
 
   @override
   void didChangeDependencies() {
@@ -140,8 +148,16 @@ class _PickerTimeFieldState extends _FTimeFieldState<_PickerTimeField> {
     if (widget.focusNode == null) {
       _focus.dispose();
     }
-    _textController.dispose();
+    _textController
+      ..removeListener(_onTextChange)
+      ..dispose();
     super.dispose();
+  }
+
+  void _onTextChange() {
+    if (_textController.text.isEmpty) {
+      _controller.value = null;
+    }
   }
 
   @override
@@ -152,10 +168,13 @@ class _PickerTimeFieldState extends _FTimeFieldState<_PickerTimeField> {
 
   void _updateTextController() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (_controller.picker.value case final value) {
-        final time = value.withDate(DateTime(1970));
-        _textController.text = widget.format?.format(time) ?? _format?.format(time) ?? '';
-      }
+      _textController.text = switch (_controller.value) {
+        null => '',
+        final value =>
+          widget.format?.format(value.withDate(DateTime(1970))) ??
+              _format?.format(value.withDate(DateTime(1970))) ??
+              '',
+      };
     });
   }
 
@@ -175,24 +194,22 @@ class _PickerTimeFieldState extends _FTimeFieldState<_PickerTimeField> {
       builder: (state) => FTextField(
         control: .managed(controller: _textController),
         focusNode: _focus,
-        style: style.fieldStyle,
+        size: widget.size,
+        style: style.fieldStyles.resolve({widget.size, context.platformVariant}),
         textAlign: widget.textAlign,
         textAlignVertical: widget.textAlignVertical,
         textDirection: widget.textDirection,
         expands: widget.expands,
         mouseCursor: widget.mouseCursor,
         canRequestFocus: widget.canRequestFocus,
+        clearable: widget.clearable ? (value) => value.text.isNotEmpty : (_) => false,
         onTap: _onTap,
         onTapAlwaysCalled: true,
-        hint: widget.hint ?? localizations.dateFieldHint,
+        hint: widget.hint ?? localizations.timeFieldHint,
         readOnly: true,
         enableInteractiveSelection: false,
-        prefixBuilder: widget.prefixBuilder == null
-            ? null
-            : (context, _, variants) => widget.prefixBuilder!(context, style, variants),
-        suffixBuilder: widget.suffixBuilder == null
-            ? null
-            : (context, _, variants) => widget.suffixBuilder!(context, style, variants),
+        prefixBuilder: widget.prefixBuilder,
+        suffixBuilder: widget.suffixBuilder,
         label: widget.label,
         description: widget.description,
         enabled: widget.enabled,

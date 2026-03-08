@@ -10,7 +10,7 @@ import 'package:forui/src/widgets/item/item_content.dart';
 import 'package:forui/src/widgets/item/raw_item_content.dart';
 
 @Variants('FItem', {'primary': (1, 'The primary item style.'), 'destructive': (2, 'The destructive item style.')})
-@Sentinels(FItemStyle, {'focusedOutlineStyle': 'focusedOutlineStyleSentinel'})
+@Sentinels(FItemStyle, {'focusedOutlineStyle': 'focusedOutlineStyleSentinel', 'shape': 'shapeBorderSentinel'})
 part 'item.design.dart';
 
 /// A marker interface which denotes that mixed-in widgets is an item.
@@ -144,6 +144,8 @@ mixin FItemMixin on Widget {
 /// );
 /// ```
 ///
+/// {@macro forui.foundation.FTappableGroup.overlay}
+///
 /// See:
 /// * https://forui.dev/docs/data/item for working examples.
 /// * [FTile] for a specialized item for touch devices.
@@ -267,6 +269,7 @@ class FItem extends StatelessWidget with FItemMixin {
     double bottom,
     Set<FTappableVariant> variants,
     FVariants<FItemGroupVariantConstraint, FItemGroupVariant, Color, Delta>? color,
+    Color? background,
     double? width,
     FItemDivider divider,
   )
@@ -319,13 +322,14 @@ class FItem extends StatelessWidget with FItemMixin {
     Widget? details,
     Widget? suffix,
     super.key,
-  }) : _builder = ((context, style, top, bottom, variants, color, width, divider) => ItemContent(
+  }) : _builder = ((context, style, top, bottom, variants, color, background, width, divider) => ItemContent(
          style: style.contentStyle,
          margin: style.margin,
          top: top,
          bottom: bottom,
          variants: variants,
-         dividerColor: color,
+         dividerForeground: color,
+         dividerBackground: background,
          dividerWidth: width,
          dividerType: divider,
          prefix: prefix,
@@ -368,13 +372,14 @@ class FItem extends StatelessWidget with FItemMixin {
     this.actions,
     Widget? prefix,
     super.key,
-  }) : _builder = ((context, style, top, bottom, variants, color, width, divider) => RawItemContent(
+  }) : _builder = ((context, style, top, bottom, variants, color, background, width, divider) => RawItemContent(
          style: style.rawItemContentStyle,
          margin: style.margin,
          top: top,
          bottom: bottom,
          variants: variants,
-         dividerColor: color,
+         dividerForeground: color,
+         dividerBackground: background,
          dividerWidth: width,
          dividerType: divider,
          prefix: prefix,
@@ -402,58 +407,77 @@ class FItem extends StatelessWidget with FItemMixin {
       bottom: margin.bottom + bottom + (divider == FItemDivider.none ? 0 : data.dividerWidth),
     );
 
-    if (onPress == null &&
-        onLongPress == null &&
-        onDoubleTap == null &&
-        onSecondaryPress == null &&
-        onSecondaryLongPress == null) {
-      return ColoredBox(
-        color: style.backgroundColor.resolve(formVariants) ?? Colors.transparent,
-        child: Padding(
-          padding: margin,
-          child: DecoratedBox(
-            decoration: style.decoration.resolve(formVariants),
-            child: _builder(context, style, top, bottom, formVariants, data.dividerColor, data.dividerWidth, divider),
-          ),
-        ),
-      );
-    }
-
-    return ColoredBox(
-      color: style.backgroundColor.resolve(formVariants) ?? Colors.transparent,
+    final background = style.backgroundColor.resolve(formVariants);
+    return DecoratedBox(
+      decoration: data.index == 0 && data.globalLast && style.shape != null
+          ? ShapeDecoration(shape: style.shape!, color: background)
+          : BoxDecoration(color: background),
       child: Padding(
         padding: margin,
-        child: FTappable(
-          style: style.tappableStyle,
-          semanticsLabel: semanticsLabel,
-          autofocus: autofocus,
-          focusNode: focusNode,
-          onFocusChange: onFocusChange,
-          onHoverChange: onHoverChange,
-          onVariantChange: onVariantChange,
-          selected: selected,
-          onPress: enabled ? (onPress ?? () {}) : null,
-          onLongPress: enabled ? (onLongPress ?? () {}) : null,
-          onDoubleTap: enabled ? onDoubleTap : null,
-          onSecondaryPress: enabled ? (onSecondaryPress ?? () {}) : null,
-          onSecondaryLongPress: enabled ? (onSecondaryLongPress ?? () {}) : null,
-          shortcuts: shortcuts,
-          actions: actions,
-          builder: (context, variants, _) => DecoratedBox(
-            position: .foreground,
-            decoration: switch (style.focusedOutlineStyle) {
-              final outline? when variants.contains(FTappableVariant.focused) => BoxDecoration(
-                border: .all(color: outline.color, width: outline.width),
-                borderRadius: outline.borderRadius,
-              ),
-              _ => const BoxDecoration(),
-            },
-            child: DecoratedBox(
-              decoration: style.decoration.resolve(variants),
-              child: _builder(context, style, top, bottom, variants, data.dividerColor, data.dividerWidth, divider),
+        child: switch (onPress != null ||
+            onLongPress != null ||
+            onDoubleTap != null ||
+            onSecondaryPress != null ||
+            onSecondaryLongPress != null) {
+          false => DecoratedBox(
+            decoration: style.decoration.resolve(formVariants),
+            child: _builder(
+              context,
+              style,
+              top,
+              bottom,
+              formVariants,
+              data.dividerColor,
+              background,
+              data.dividerWidth,
+              divider,
             ),
           ),
-        ),
+          true => FTappable(
+            style: style.tappableStyle,
+            semanticsLabel: semanticsLabel,
+            autofocus: autofocus,
+            focusNode: focusNode,
+            onFocusChange: onFocusChange,
+            onHoverChange: onHoverChange,
+            onVariantChange: onVariantChange,
+            selected: selected,
+            onPress: enabled ? (onPress ?? () {}) : null,
+            onLongPress: enabled ? (onLongPress ?? () {}) : null,
+            onDoubleTap: enabled ? onDoubleTap : null,
+            onSecondaryPress: enabled ? (onSecondaryPress ?? () {}) : null,
+            onSecondaryLongPress: enabled ? (onSecondaryLongPress ?? () {}) : null,
+            shortcuts: shortcuts,
+            actions: actions,
+            builder: (context, variants, _) {
+              final decoration = style.decoration.resolve(variants);
+              return DecoratedBox(
+                position: .foreground,
+                decoration: switch (style.focusedOutlineStyle) {
+                  final outline? when variants.contains(FTappableVariant.focused) => BoxDecoration(
+                    border: .all(color: outline.color, width: outline.width),
+                    borderRadius: outline.borderRadius,
+                  ),
+                  _ => const BoxDecoration(),
+                },
+                child: DecoratedBox(
+                  decoration: decoration,
+                  child: _builder(
+                    context,
+                    style,
+                    top,
+                    bottom,
+                    variants,
+                    data.dividerColor,
+                    decoration.color ?? background,
+                    data.dividerWidth,
+                    divider,
+                  ),
+                ),
+              );
+            },
+          ),
+        },
       ),
     );
   }
@@ -486,8 +510,14 @@ class FItem extends StatelessWidget with FItemMixin {
 extension type FItemStyles(FVariants<FItemVariantConstraint, FItemVariant, FItemStyle, FItemStyleDelta> _)
     implements FVariants<FItemVariantConstraint, FItemVariant, FItemStyle, FItemStyleDelta> {
   /// Creates a [FItemStyles] that inherits its properties.
-  factory FItemStyles.inherit({required FColors colors, required FTypography typography, required FStyle style}) {
-    final primary = FItemStyle.inherit(colors: colors, typography: typography, style: style);
+  factory FItemStyles.inherit({
+    required FColors colors,
+    required FTypography typography,
+    required FStyle style,
+    required bool touch,
+  }) {
+    final primary = FItemStyle.inherit(colors: colors, typography: typography, style: style, touch: touch);
+
     return FItemStyles(
       FVariants.from(
         primary,
@@ -500,12 +530,14 @@ extension type FItemStyles(FVariants<FItemVariantConstraint, FItemVariant, FItem
               prefix: colors.destructive,
               foreground: colors.destructive,
               mutedForeground: colors.destructive,
+              padding: primary.contentStyle.padding,
             ),
             rawItemContentStyle: FRawItemContentStyle.inherit(
               colors: colors,
               typography: typography,
               prefix: colors.primary,
               color: colors.primary,
+              padding: primary.rawItemContentStyle.padding,
             ),
           ),
         },
@@ -522,6 +554,22 @@ extension type FItemStyles(FVariants<FItemVariantConstraint, FItemVariant, FItem
 
 /// A [FItem]'s style.
 class FItemStyle with Diagnosticable, _$FItemStyleFunctions {
+  /// The padding and margin for the item when used in a menu.
+  static (EdgeInsetsGeometry padding, EdgeInsetsGeometry margin) menuInsets({required bool touch}) => touch
+      ? (const EdgeInsetsDirectional.fromSTEB(10, 12.5, 6, 12.5), const .symmetric(horizontal: 4))
+      : (const EdgeInsetsDirectional.fromSTEB(10, 3.5, 5, 3.5), const .symmetric(vertical: 3, horizontal: 4));
+
+  /// The padding and margin for the item when used in a autocomplete/select.
+  static (EdgeInsetsGeometry padding, EdgeInsetsGeometry margin) selectInsets({required bool touch}) => touch
+      ? (const EdgeInsetsDirectional.fromSTEB(10, 12.5, 6, 12.5), const .symmetric(horizontal: 4))
+      : (const EdgeInsetsDirectional.fromSTEB(10, 6.5, 5, 6.5), const .symmetric(horizontal: 4));
+
+  /// The item's outer shape when outside of an [FItemGroup] or other similar groups.
+  ///
+  /// If provided, the entire item, including the [backgroundColor] and [margin], is clipped to this shape.
+  @override
+  final ShapeBorder? shape;
+
   /// The item's background color.
   ///
   /// It is applied to the entire item, including [margin]. Since it is applied before [decoration] in the z-layer,
@@ -532,8 +580,6 @@ class FItemStyle with Diagnosticable, _$FItemStyleFunctions {
   final FVariants<FTappableVariantConstraint, FTappableVariant, Color?, Delta> backgroundColor;
 
   /// The margin around the item, including the [decoration].
-  ///
-  /// Defaults to `const EdgeInsets.symmetric(vertical: 2, horizontal: 4)`.
   @override
   final EdgeInsetsGeometry margin;
 
@@ -565,50 +611,61 @@ class FItemStyle with Diagnosticable, _$FItemStyleFunctions {
     required this.rawItemContentStyle,
     required this.tappableStyle,
     required this.focusedOutlineStyle,
-    this.margin = const .symmetric(vertical: 2, horizontal: 4),
+    required this.margin,
+    this.shape,
   });
 
   /// Creates a [FTileGroupStyle] that inherits from the given arguments.
-  FItemStyle.inherit({required FColors colors, required FTypography typography, required FStyle style})
-    : this(
-        backgroundColor: FVariants(
-          colors.background,
-          variants: {
-            [.disabled]: colors.background,
-          },
+  factory FItemStyle.inherit({
+    required FColors colors,
+    required FTypography typography,
+    required FStyle style,
+    required bool touch,
+  }) {
+    final (padding, margin) = FItemStyle.menuInsets(touch: touch);
+    return FItemStyle(
+      backgroundColor: FVariants(
+        colors.background,
+        variants: {
+          [.disabled]: colors.background,
+        },
+      ),
+      decoration: .from(
+        ShapeDecoration(
+          shape: RoundedSuperellipseBorder(borderRadius: style.borderRadius.md),
+          color: colors.background,
         ),
-        decoration: FVariants.from(
-          ShapeDecoration(
-            shape: RoundedSuperellipseBorder(borderRadius: style.borderRadius.md),
-            color: colors.background,
-          ),
-          variants: {
-            [.hovered, .pressed]: .shapeDelta(color: colors.secondary),
-            //
-            [.disabled]: const .shapeDelta(),
-            //
-            [.selected]: .shapeDelta(color: colors.secondary),
-            [.selected.and(.disabled)]: .shapeDelta(color: colors.disable(colors.secondary)),
-          },
-        ),
-        contentStyle: .inherit(
-          colors: colors,
-          typography: typography,
-          prefix: colors.primary,
-          foreground: colors.foreground,
-          mutedForeground: colors.mutedForeground,
-        ),
-        rawItemContentStyle: .inherit(
-          colors: colors,
-          typography: typography,
-          prefix: colors.foreground,
-          color: colors.foreground,
-        ),
-        tappableStyle: style.tappableStyle.copyWith(
-          motion: FTappableMotion.none,
-          pressedEnterDuration: .zero,
-          pressedExitDuration: const Duration(milliseconds: 25),
-        ),
-        focusedOutlineStyle: style.focusedOutlineStyle,
-      );
+        variants: {
+          [.hovered, .pressed]: .shapeDelta(color: colors.secondary),
+          //
+          [.disabled]: const .shapeDelta(),
+          //
+          [.selected]: .shapeDelta(color: colors.secondary),
+          [.selected.and(.disabled)]: .shapeDelta(color: colors.disable(colors.secondary)),
+        },
+      ),
+      contentStyle: .inherit(
+        colors: colors,
+        typography: typography,
+        prefix: colors.primary,
+        foreground: colors.foreground,
+        mutedForeground: colors.mutedForeground,
+        padding: padding,
+      ),
+      rawItemContentStyle: .inherit(
+        colors: colors,
+        typography: typography,
+        prefix: colors.foreground,
+        color: colors.foreground,
+        padding: padding,
+      ),
+      tappableStyle: style.tappableStyle.copyWith(
+        motion: FTappableMotion.none,
+        pressedEnterDuration: .zero,
+        pressedExitDuration: const Duration(milliseconds: 25),
+      ),
+      focusedOutlineStyle: style.focusedOutlineStyle,
+      margin: margin,
+    );
+  }
 }

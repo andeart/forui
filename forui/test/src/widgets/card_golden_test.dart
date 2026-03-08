@@ -32,12 +32,29 @@ void main() {
       await expectLater(find.byType(TestScaffold), matchesGoldenFile('card/${theme.name}/content.png'));
     });
 
+    testWidgets('${theme.name} with title, subtitle, and child', (tester) async {
+      await tester.pumpWidget(
+        TestScaffold(
+          theme: theme.data,
+          child: FCard(
+            title: const Text('Account'),
+            subtitle: const Text('Make changes to your account here.'),
+            child: const Column(
+              children: [FTextField(label: Text('Name'), hint: 'Enter your name')],
+            ),
+          ),
+        ),
+      );
+
+      await expectLater(find.byType(TestScaffold), matchesGoldenFile('card/${theme.name}/content-with-child.png'));
+    });
+
     testWidgets('${theme.name} with image', (tester) async {
       await tester.pumpWidget(
         TestScaffold(
           theme: theme.data,
           child: FCard(
-            image: Container(color: Colors.blue, height: 100, width: 200),
+            image: Container(color: Colors.blue, height: 100, width: 250),
             title: const Text('Notifications'),
             subtitle: const Text('You have 3 unread messages.'),
           ),

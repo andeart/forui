@@ -19,6 +19,7 @@ typedef FPasswordFieldIconBuilder<T> =
 
 @internal
 class PasswordFieldProperties with Diagnosticable {
+  final FTextFieldSizeVariant size;
   final FTextFieldStyleDelta style;
   final FFieldBuilder<FTextFieldStyle> builder;
   final Widget? label;
@@ -81,6 +82,7 @@ class PasswordFieldProperties with Diagnosticable {
   final FObscureTextControl obscureTextControl;
 
   PasswordFieldProperties({
+    required this.size,
     required this.style,
     required this.builder,
     required this.label,
@@ -147,6 +149,7 @@ class PasswordFieldProperties with Diagnosticable {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
+      ..add(DiagnosticsProperty('size', size))
       ..add(DiagnosticsProperty('style', style))
       ..add(ObjectFlagProperty.has('builder', builder))
       ..add(StringProperty('hint', hint))
@@ -292,6 +295,7 @@ class _State extends State<PasswordField> {
     valueListenable: _controller,
     builder: (context, obscured, child) => Input(
       controller: widget.controller,
+      size: widget.properties.size,
       style: widget.properties.style,
       builder: widget.properties.builder,
       label: widget.properties.label,

@@ -34,7 +34,7 @@ void main() {
           child: FAutocomplete.builder(
             key: key,
             style: TestScaffold.blueScreen.autocompleteStyle.copyWith(
-              fieldStyle: const .delta(cursorColor: Color(0xFF03A9F4)),
+              fieldStyles: .delta([.all(const .delta(cursorColor: Color(0xFF03A9F4)))]),
             ),
             filter: (query) => fruits.where((f) => f.toLowerCase().startsWith(query.toLowerCase())),
             contentBuilder: (context, query, items) => [
@@ -166,4 +166,24 @@ void main() {
       await expectLater(find.byType(TestScaffold), matchesGoldenFile('autocomplete/${theme.name}/item/raw.png'));
     });
   }
+
+  testWidgets('desktop hovered', (tester) async {
+    await tester.pumpWidget(
+      TestScaffold.app(
+        theme: FThemes.neutral.light.desktop,
+        alignment: .topCenter,
+        child: FAutocomplete(key: key, items: const ['Apple', 'Banana']),
+      ),
+    );
+
+    await tester.tap(find.byKey(key));
+    await tester.pumpAndSettle();
+
+    final gesture = await tester.createPointerGesture();
+
+    await gesture.moveTo(tester.getCenter(find.text('Apple')));
+    await tester.pump();
+
+    await expectLater(find.byType(TestScaffold), matchesGoldenFile('autocomplete/item/desktop/hover.png'));
+  });
 }

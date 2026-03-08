@@ -173,7 +173,7 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
   /// dart run forui style create circular-progress
   /// ```
   @override
-  final FCircularProgressStyle circularProgressStyle;
+  final FCircularProgressSizeStyles circularProgressStyles;
 
   /// The date field style.
   ///
@@ -502,7 +502,7 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
   @override
   final FTappableStyle tappableStyle;
 
-  /// The text field style.
+  /// The text field styles.
   ///
   /// ## CLI
   /// To generate and customize this style:
@@ -511,7 +511,7 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
   /// dart run forui style create text-field
   /// ```
   @override
-  final FTextFieldStyle textFieldStyle;
+  final FTextFieldSizeStyles textFieldStyles;
 
   /// The tile's styles.
   ///
@@ -570,9 +570,12 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
 
   final Map<Object, ThemeExtension<dynamic>> _extensions;
 
-  /// Creates a [FThemeData] that configures the widget styles using the given properties if not given.
+  /// Creates a [FThemeData].
+  ///
+  /// Set [touch] to true for touch-optimized sizing.
   factory FThemeData({
     required FColors colors,
+    required bool touch,
     String? debugLabel,
     FBreakpoints breakpoints = const FBreakpoints(),
     FTypography? typography,
@@ -588,7 +591,13 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     FCalendarStyle? calendarStyle,
     FCardStyle? cardStyle,
     FCheckboxStyle? checkboxStyle,
-    FCircularProgressStyle? circularProgressStyle,
+    FVariants<
+      FCircularProgressSizeVariantConstraint,
+      FCircularProgressSizeVariant,
+      FCircularProgressStyle,
+      FCircularProgressStyleDelta
+    >?
+    circularProgressStyles,
     FDateFieldStyle? dateFieldStyle,
     FDeterminateProgressStyle? determinateProgressStyle,
     FDialogRouteStyle? dialogRouteStyle,
@@ -625,7 +634,8 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     FSwitchStyle? switchStyle,
     FTabsStyle? tabsStyle,
     FTappableStyle? tappableStyle,
-    FTextFieldStyle? textFieldStyle,
+    FVariants<FTextFieldSizeVariantConstraint, FTextFieldSizeVariant, FTextFieldStyle, FTextFieldStyleDelta>?
+    textFieldStyles,
     FVariants<FItemVariantConstraint, FItemVariant, FTileStyle, FTileStyleDelta>? tileStyles,
     FTileGroupStyle? tileGroupStyle,
     FTimeFieldStyle? timeFieldStyle,
@@ -633,34 +643,37 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     FTooltipStyle? tooltipStyle,
     Iterable<ThemeExtension<dynamic>> extensions = const [],
   }) {
-    typography ??= .inherit(colors: colors);
-    style ??= .inherit(colors: colors, typography: typography);
+    typography ??= .inherit(colors: colors, touch: touch);
+    style ??= .inherit(colors: colors, typography: typography, touch: touch);
     return ._(
       debugLabel: debugLabel,
       breakpoints: breakpoints,
       colors: colors,
       typography: typography,
       style: style,
-      accordionStyle: accordionStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      autocompleteStyle: autocompleteStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      accordionStyle: accordionStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
+      autocompleteStyle:
+          autocompleteStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       alertStyles: alertStyles == null
-          ? FAlertStyles.inherit(colors: colors, typography: typography, style: style)
+          ? FAlertStyles.inherit(colors: colors, typography: typography, style: style, touch: touch)
           : FAlertStyles(alertStyles),
       avatarStyle: avatarStyle ?? .inherit(colors: colors, typography: typography),
       badgeStyles: badgeStyles == null
-          ? FBadgeStyles.inherit(colors: colors, typography: typography, style: style)
+          ? FBadgeStyles.inherit(colors: colors, typography: typography, style: style, touch: touch)
           : FBadgeStyles(badgeStyles),
       bottomNavigationBarStyle:
           bottomNavigationBarStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      breadcrumbStyle: breadcrumbStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      breadcrumbStyle: breadcrumbStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       buttonStyles: buttonStyles == null
-          ? FButtonStyles.inherit(colors: colors, typography: typography, style: style)
+          ? FButtonStyles.inherit(colors: colors, typography: typography, style: style, touch: touch)
           : FButtonStyles(buttonStyles),
-      calendarStyle: calendarStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      cardStyle: cardStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      checkboxStyle: checkboxStyle ?? .inherit(colors: colors, style: style),
-      circularProgressStyle: circularProgressStyle ?? .inherit(colors: colors),
-      dateFieldStyle: dateFieldStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      calendarStyle: calendarStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
+      cardStyle: cardStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
+      checkboxStyle: checkboxStyle ?? .inherit(colors: colors, style: style, touch: touch),
+      circularProgressStyles: circularProgressStyles == null
+          ? FCircularProgressSizeStyles.inherit(colors: colors, typography: typography)
+          : FCircularProgressSizeStyles(circularProgressStyles),
+      dateFieldStyle: dateFieldStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       determinateProgressStyle: determinateProgressStyle ?? .inherit(colors: colors, style: style),
       dialogRouteStyle: dialogRouteStyle ?? .inherit(colors: colors),
       dialogStyle: dialogStyle ?? .inherit(colors: colors, typography: typography, style: style),
@@ -671,41 +684,47 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
           ? FHeaderStyles.inherit(colors: colors, typography: typography, style: style)
           : FHeaderStyles(headerStyles),
       itemStyles: itemStyles == null
-          ? FItemStyles.inherit(colors: colors, typography: typography, style: style)
+          ? FItemStyles.inherit(colors: colors, typography: typography, style: style, touch: touch)
           : FItemStyles(itemStyles),
-      itemGroupStyle: itemGroupStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      itemGroupStyle: itemGroupStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       labelStyles: labelStyles ?? .inherit(style: style),
       lineCalendarStyle: lineCalendarStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      multiSelectStyle: multiSelectStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      multiSelectStyle:
+          multiSelectStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       modalSheetStyle: modalSheetStyle ?? .inherit(colors: colors),
-      paginationStyle: paginationStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      paginationStyle: paginationStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       persistentSheetStyle: persistentSheetStyle ?? const FPersistentSheetStyle(),
       pickerStyle: pickerStyle ?? .inherit(colors: colors, style: style, typography: typography),
       popoverStyle: popoverStyle ?? .inherit(colors: colors, style: style),
-      popoverMenuStyle: popoverMenuStyle ?? .inherit(colors: colors, style: style, typography: typography),
+      popoverMenuStyle:
+          popoverMenuStyle ?? .inherit(colors: colors, style: style, typography: typography, touch: touch),
       progressStyle: progressStyle ?? .inherit(colors: colors, style: style),
-      radioStyle: radioStyle ?? .inherit(colors: colors, style: style),
+      radioStyle: radioStyle ?? .inherit(colors: colors, style: style, touch: touch),
       resizableStyles: resizableStyles == null
           ? FResizableStyles.inherit(colors: colors, style: style)
           : FResizableStyles(resizableStyles),
       scaffoldStyle: scaffoldStyle ?? .inherit(colors: colors, style: style),
-      selectStyle: selectStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      selectGroupStyle: selectGroupStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      selectMenuTileStyle: selectMenuTileStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      sidebarStyle: sidebarStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      selectStyle: selectStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
+      selectGroupStyle:
+          selectGroupStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
+      selectMenuTileStyle:
+          selectMenuTileStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
+      sidebarStyle: sidebarStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       sliderStyles: sliderStyles == null
           ? FSliderStyles.inherit(colors: colors, typography: typography, style: style)
           : FSliderStyles(sliderStyles),
-      toasterStyle: toasterStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      toasterStyle: toasterStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       switchStyle: switchStyle ?? .inherit(colors: colors, style: style),
       tabsStyle: tabsStyle ?? .inherit(colors: colors, typography: typography, style: style),
       tappableStyle: tappableStyle ?? FTappableStyle(),
-      textFieldStyle: textFieldStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      textFieldStyles: textFieldStyles == null
+          ? FTextFieldSizeStyles.inherit(colors: colors, typography: typography, style: style, touch: touch)
+          : FTextFieldSizeStyles(textFieldStyles),
       tileStyles: tileStyles == null
           ? FTileStyles.inherit(colors: colors, typography: typography, style: style)
           : FTileStyles(tileStyles),
-      tileGroupStyle: tileGroupStyle ?? .inherit(colors: colors, typography: typography, style: style),
-      timeFieldStyle: timeFieldStyle ?? .inherit(colors: colors, typography: typography, style: style),
+      tileGroupStyle: tileGroupStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
+      timeFieldStyle: timeFieldStyle ?? .inherit(colors: colors, typography: typography, style: style, touch: touch),
       timePickerStyle: timePickerStyle ?? .inherit(colors: colors, typography: typography, style: style),
       tooltipStyle: tooltipStyle ?? .inherit(colors: colors, typography: typography, style: style),
       extensions: .unmodifiable({for (final extension in extensions) extension.type: extension}),
@@ -713,7 +732,7 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
   }
 
   /// Creates a linear interpolation between two [FThemeData] using the given factor [t].
-  factory FThemeData.lerp(FThemeData a, FThemeData b, double t) => .new(
+  factory FThemeData.lerp(FThemeData a, FThemeData b, double t) => ._(
     debugLabel: t < 0.5 ? a.debugLabel : b.debugLabel,
     breakpoints: t < 0.5 ? a.breakpoints : b.breakpoints,
     colors: .lerp(a.colors, b.colors, t),
@@ -761,23 +780,20 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
         }),
       );
     }, (base, variants) => FButtonStyles(.raw(base, variants))),
-
     calendarStyle: a.calendarStyle.lerp(b.calendarStyle, t),
-
     cardStyle: a.cardStyle.lerp(b.cardStyle, t),
-
     checkboxStyle: a.checkboxStyle.lerp(b.checkboxStyle, t),
-
-    circularProgressStyle: a.circularProgressStyle.lerp(b.circularProgressStyle, t),
-
+    circularProgressStyles: FVariants.lerpWhereUsing(
+      a.circularProgressStyles,
+      b.circularProgressStyles,
+      t,
+      (a, b, t) => a!.lerp(b!, t),
+      (base, variants) => FCircularProgressSizeStyles(.raw(base, variants)),
+    ),
     dateFieldStyle: a.dateFieldStyle.lerp(b.dateFieldStyle, t),
-
     determinateProgressStyle: a.determinateProgressStyle.lerp(b.determinateProgressStyle, t),
-
     dialogRouteStyle: a.dialogRouteStyle.lerp(b.dialogRouteStyle, t),
-
     dialogStyle: a.dialogStyle.lerp(b.dialogStyle, t),
-
     dividerStyles: FVariants.lerpWhereUsing(
       a.dividerStyles,
       b.dividerStyles,
@@ -834,7 +850,13 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     switchStyle: a.switchStyle.lerp(b.switchStyle, t),
     tabsStyle: a.tabsStyle.lerp(b.tabsStyle, t),
     tappableStyle: a.tappableStyle.lerp(b.tappableStyle, t),
-    textFieldStyle: a.textFieldStyle.lerp(b.textFieldStyle, t),
+    textFieldStyles: FVariants.lerpWhereUsing(
+      a.textFieldStyles,
+      b.textFieldStyles,
+      t,
+      (a, b, t) => a!.lerp(b!, t),
+      (base, variants) => FTextFieldSizeStyles(.raw(base, variants)),
+    ),
     tileStyles: FVariants.lerpWhereUsing(
       a.tileStyles,
       b.tileStyles,
@@ -847,9 +869,8 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     timePickerStyle: a.timePickerStyle.lerp(b.timePickerStyle, t),
     tooltipStyle: a.tooltipStyle.lerp(b.tooltipStyle, t),
     // Copied from Flutter's [ThemeData].
-    extensions: (a._extensions.map(
-      (id, extensionA) => MapEntry(id, extensionA.lerp(b._extensions[id], t)),
-    )..addEntries(b._extensions.entries.where((entry) => !a._extensions.containsKey(entry.key)))).values,
+    extensions: a._extensions.map((id, extensionA) => MapEntry(id, extensionA.lerp(b._extensions[id], t)))
+      ..addEntries(b._extensions.entries.where((entry) => !a._extensions.containsKey(entry.key))),
   );
 
   FThemeData._({
@@ -869,7 +890,7 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     required this.calendarStyle,
     required this.cardStyle,
     required this.checkboxStyle,
-    required this.circularProgressStyle,
+    required this.circularProgressStyles,
     required this.dateFieldStyle,
     required this.determinateProgressStyle,
     required this.dialogRouteStyle,
@@ -900,7 +921,7 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     required this.switchStyle,
     required this.tabsStyle,
     required this.tappableStyle,
-    required this.textFieldStyle,
+    required this.textFieldStyles,
     required this.tileStyles,
     required this.tileGroupStyle,
     required this.timeFieldStyle,
@@ -984,7 +1005,7 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
   /// ```dart
   /// // Apply a Forui theme to Material widgets
   /// MaterialApp(
-  ///   theme: FThemes.neutral.light.toApproximateMaterialTheme(),
+  ///   theme: FThemes.neutral.light.touch.toApproximateMaterialTheme(),
   ///   // ...
   /// )
   /// ```
@@ -1064,14 +1085,14 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
 
       // Input
       inputDecorationTheme: InputDecorationTheme(
-        border: WidgetStateInputBorder.resolveWith((states) => textFieldStyle.border.resolve(toVariants(states))),
-        labelStyle: textFieldStyle.descriptionTextStyle.base,
-        floatingLabelStyle: textFieldStyle.labelTextStyle.base,
-        hintStyle: textFieldStyle.hintTextStyle.base,
-        errorStyle: textFieldStyle.errorTextStyle.base,
-        helperStyle: textFieldStyle.descriptionTextStyle.base,
-        counterStyle: textFieldStyle.counterTextStyle.base,
-        contentPadding: textFieldStyle.contentPadding,
+        border: WidgetStateInputBorder.resolveWith((states) => textFieldStyles.md.border.resolve(toVariants(states))),
+        labelStyle: textFieldStyles.md.descriptionTextStyle.base,
+        floatingLabelStyle: textFieldStyles.md.labelTextStyle.base,
+        hintStyle: textFieldStyles.md.hintTextStyle.base,
+        errorStyle: textFieldStyles.md.errorTextStyle.base,
+        helperStyle: textFieldStyles.md.descriptionTextStyle.base,
+        counterStyle: textFieldStyles.md.counterTextStyle.base,
+        contentPadding: textFieldStyles.md.contentPadding,
       ),
 
       // Date Picker
@@ -1301,30 +1322,28 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
   /// print(theme.avatarStyle == copy.avatarStyle); // false
   /// ```
   ///
-  /// To modify [colors], [typography], and/or [style], create a new `FThemeData` using [FThemeData] first.
-  /// This allows the global theme data to propagate to widget-specific theme data.
+  /// To modify [colors], [typography], and/or [style], create a new `FThemeData` using [FThemeData] first. This allows
+  /// the global theme data to propagate to widget-specific theme data.
   ///
   /// ```dart
   /// @override
   /// Widget build(BuildContext context) {
   ///   final theme = FThemeData(
-  ///     colors: FThemes.neutral.light.colors.copyWith(
+  ///     colors: FThemes.neutral.light.touch.colors.copyWith(
   ///       primary: const Color(0xFF0D47A1), // dark blue
   ///       primaryForeground: const Color(0xFFFFFFFF), // white
   ///     ),
-  ///     typography: FThemes.neutral.light.typography.copyWith(
+  ///     typography: FThemes.neutral.light.touch.typography.copyWith(
   ///       // ...
   ///     ).scale(sizeScalar: 0.8),
-  ///     style: FThemes.neutral.light.style.copyWith(
+  ///     style: FThemes.neutral.light.touch.style.copyWith(
   ///       borderRadius: .zero,
   ///     ),
   ///   );
   ///
   ///   return FTheme(
   ///     data: theme.copyWith(
-  ///       cardStyle: theme.cardStyle.copyWith(
-  ///         decoration: .delta(borderRadius: const .all(.circular(8))),
-  ///       ),
+  ///       cardStyle: .delta(decoration: .delta(borderRadius: const .all(.circular(8)))),
   ///     ),
   ///     child: const FScaffold(...),
   ///   );
@@ -1350,7 +1369,13 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     FCalendarStyleDelta? calendarStyle,
     FCardStyleDelta? cardStyle,
     FCheckboxStyleDelta? checkboxStyle,
-    FCircularProgressStyleDelta? circularProgressStyle,
+    FVariantsDelta<
+      FCircularProgressSizeVariantConstraint,
+      FCircularProgressSizeVariant,
+      FCircularProgressStyle,
+      FCircularProgressStyleDelta
+    >?
+    circularProgressStyles,
     FDateFieldStyleDelta? dateFieldStyle,
     FDeterminateProgressStyleDelta? determinateProgressStyle,
     FDialogRouteStyleDelta? dialogRouteStyle,
@@ -1388,7 +1413,8 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     FSwitchStyleDelta? switchStyle,
     FTabsStyleDelta? tabsStyle,
     FTappableStyleDelta? tappableStyle,
-    FTextFieldStyleDelta? textFieldStyle,
+    FVariantsDelta<FTextFieldSizeVariantConstraint, FTextFieldSizeVariant, FTextFieldStyle, FTextFieldStyleDelta>?
+    textFieldStyles,
     FVariantsDelta<FItemVariantConstraint, FItemVariant, FTileStyle, FTileStyleDelta>? tileStyles,
     FTileGroupStyleDelta? tileGroupStyle,
     FTimeFieldStyleDelta? timeFieldStyle,
@@ -1396,6 +1422,8 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     FTooltipStyleDelta? tooltipStyle,
     Iterable<ThemeExtension<dynamic>>? extensions,
   }) => FThemeData(
+    // This does not affect anything since it's only used to configure null parameters, and parameters are never null.
+    touch: true,
     debugLabel: debugLabel ?? this.debugLabel,
     breakpoints: breakpoints ?? this.breakpoints,
     colors: colors ?? this.colors,
@@ -1413,7 +1441,9 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     calendarStyle: calendarStyle?.call(this.calendarStyle) ?? this.calendarStyle,
     cardStyle: cardStyle?.call(this.cardStyle) ?? this.cardStyle,
     checkboxStyle: checkboxStyle?.call(this.checkboxStyle) ?? this.checkboxStyle,
-    circularProgressStyle: circularProgressStyle?.call(this.circularProgressStyle) ?? this.circularProgressStyle,
+    circularProgressStyles: circularProgressStyles == null
+        ? this.circularProgressStyles
+        : FCircularProgressSizeStyles(circularProgressStyles(this.circularProgressStyles)),
     dateFieldStyle: dateFieldStyle?.call(this.dateFieldStyle) ?? this.dateFieldStyle,
     determinateProgressStyle:
         determinateProgressStyle?.call(this.determinateProgressStyle) ?? this.determinateProgressStyle,
@@ -1447,7 +1477,9 @@ final class FThemeData with Diagnosticable, _$FThemeDataFunctions {
     switchStyle: switchStyle?.call(this.switchStyle) ?? this.switchStyle,
     tabsStyle: tabsStyle?.call(this.tabsStyle) ?? this.tabsStyle,
     tappableStyle: tappableStyle?.call(this.tappableStyle) ?? this.tappableStyle,
-    textFieldStyle: textFieldStyle?.call(this.textFieldStyle) ?? this.textFieldStyle,
+    textFieldStyles: textFieldStyles == null
+        ? this.textFieldStyles
+        : FTextFieldSizeStyles(textFieldStyles(this.textFieldStyles)),
     tileStyles: tileStyles == null ? this.tileStyles : FTileStyles(tileStyles(this.tileStyles)),
     tileGroupStyle: tileGroupStyle?.call(this.tileGroupStyle) ?? this.tileGroupStyle,
     timeFieldStyle: timeFieldStyle?.call(this.timeFieldStyle) ?? this.timeFieldStyle,

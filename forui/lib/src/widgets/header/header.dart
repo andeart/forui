@@ -26,6 +26,8 @@ part 'nested_header.dart';
 
 /// A header contains the page's title and actions.
 ///
+/// Recommended for touch devices. Prefer [FSidebar] on desktop and larger screens.
+///
 /// See:
 /// * https://forui.dev/docs/navigation/header for working examples.
 /// * [FHeaderStyle] for customizing a header's appearance.
@@ -102,9 +104,9 @@ extension type FHeaderStyles(FVariants<FHeaderVariantConstraint, FHeaderVariant,
   factory FHeaderStyles.inherit({required FColors colors, required FTypography typography, required FStyle style}) {
     final root = FHeaderStyle(
       systemOverlayStyle: colors.systemOverlayStyle,
-      titleTextStyle: typography.xl3.copyWith(color: colors.foreground, fontWeight: .w700, height: 1),
-      actionStyle: FHeaderActionStyle.inherit(colors: colors, style: style, size: 30),
-      padding: style.pagePadding.copyWith(bottom: 15),
+      titleTextStyle: typography.xl2.copyWith(color: colors.foreground, fontWeight: .w700, height: 1),
+      actionStyle: .inherit(colors: colors, style: style, size: typography.xl2.fontSize ?? 30, padding: const .all(7)),
+      padding: style.pagePadding.copyWith(bottom: 10),
     );
 
     return FHeaderStyles(
@@ -115,8 +117,8 @@ extension type FHeaderStyles(FVariants<FHeaderVariantConstraint, FHeaderVariant,
           [.nested]: FHeaderStyle(
             systemOverlayStyle: colors.systemOverlayStyle,
             titleTextStyle: typography.xl.copyWith(color: colors.foreground, fontWeight: .w600, height: 1),
-            actionStyle: FHeaderActionStyle.inherit(colors: colors, style: style, size: 25),
-            padding: style.pagePadding.copyWith(bottom: 15),
+            actionStyle: .inherit(colors: colors, style: style, size: 22, padding: const .all(11)),
+            padding: style.pagePadding.copyWith(bottom: 10),
           ),
         },
       ),
@@ -169,7 +171,7 @@ class FHeaderStyle with Diagnosticable, _$FHeaderStyleFunctions {
   @override
   final EdgeInsetsGeometry padding;
 
-  /// The spacing between [FHeaderAction]s. Defaults to 10.
+  /// The spacing between [FHeaderAction]s. Defaults to 0.
   @override
   final double actionSpacing;
 
@@ -181,6 +183,10 @@ class FHeaderStyle with Diagnosticable, _$FHeaderStyleFunctions {
   @override
   final FHeaderActionStyle actionStyle;
 
+  /// Whether the actions support pressing an action and sliding to another. Defaults to true.
+  @override
+  final FVariants<FPlatformVariantConstraint, FPlatformVariant, bool, Delta> slidableActions;
+
   /// Creates a [FHeaderStyle].
   const FHeaderStyle({
     required this.systemOverlayStyle,
@@ -189,6 +195,7 @@ class FHeaderStyle with Diagnosticable, _$FHeaderStyleFunctions {
     required this.padding,
     this.decoration = const BoxDecoration(),
     this.backgroundFilter,
-    this.actionSpacing = 10,
+    this.actionSpacing = 0,
+    this.slidableActions = const .all(true),
   });
 }

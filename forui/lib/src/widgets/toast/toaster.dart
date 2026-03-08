@@ -239,7 +239,7 @@ final class FToastAlignment {
 /// ```dart
 /// MaterialApp(
 ///   builder: (context, child) => FTheme(
-///     data: FThemes.neutral.light,
+///     data: FThemes.neutral.light.touch,
 ///     child: FToaster(child: child!),
 ///   ),
 ///   home: HomePage(),
@@ -266,6 +266,13 @@ class FToaster extends StatefulWidget {
   /// To replace the style:
   /// ```dart
   /// style: FToasterStyle(...)
+  /// ```
+  ///
+  /// ## CLI
+  /// To generate and customize this style:
+  ///
+  /// ```shell
+  /// dart run forui style create toaster
   /// ```
   final FToasterStyleDelta style;
 

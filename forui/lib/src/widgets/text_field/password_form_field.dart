@@ -60,6 +60,7 @@ class PasswordFormField extends StatelessWidget with FFormFieldProperties<String
       builder: (state) => PasswordField(
         controller: controller,
         properties: PasswordFieldProperties(
+          size: properties.size,
           style: properties.style,
           builder: properties.builder,
           label: properties.label,

@@ -1,4 +1,7 @@
-## 0.20.0
+## 0.20.0 (Next)
+
+This update builds upon the styling overhaul by introducing desktop and touch variants of each theme and making widget
+sizes consistent across each platform.
 
 ### `FAlert`
 * Add `FAlertVariant.primary`.
@@ -6,6 +9,19 @@
 * **Breaking** Change `FAlert.variant` type from `FAlertVariant?` to `FAlertVariant`. Use `FAlertVariant.primary` instead
   of `null`.
 * **Breaking** Change `FAlertStyle.decoration` type from `BoxDecoration` to `Decoration`.
+
+
+### `FAutocomplete`
+* Add `FAutocomplete.size`.
+* Add `FAutocompleteSizeStyles`.
+* Add `FAutocompleteFieldStyle`.
+
+* Change `FAutocompleteSection` layout to better align with the latest shadcn version.
+
+* **Breaking** Rename `FAutocompleteStyle.fieldStyle` to `FAutocompleteStyle.fieldStyles`. Type changed from
+  `FTextFieldStyle` to `FAutocompleteSizeStyles`.
+* **Breaking** Move `FAutocompleteStyle.composingTextStyle` and `FAutocompleteStyle.typeaheadTextStyle` to
+  `FAutocompleteFieldStyle`.
 
 
 ### `FBadge`
@@ -49,9 +65,30 @@
   `FVariants<..., Decoration, DecorationDelta>`.
 
 
+### `FCircularProgress`
+* Add `FCircularProgress.size`.
+* Add `FCircularProgressSizeStyles` and `FCircularProgressSizeVariant`.
+
+* **Breaking** Rename `FThemeData.circularProgressStyle` to `FThemeData.circularProgressStyles`. Type changed from
+  `FCircularProgressStyle` to `FCircularProgressSizeStyles`.
+
+
 ### `FDeterminateProgress`
 * **Breaking** Change `FDeterminateProgressStyle.trackDecoration` and `fillDecoration` types from `BoxDecoration` to
   `Decoration`.
+
+
+### `FDateField`
+* Add `FDateField.size`.
+
+* **Breaking** Change `FDateField.prefixBuilder` type from `FFieldIconBuilder<FDateFieldStyle>?` to
+  `FFieldIconBuilder<FTextFieldStyle>?`.
+* **Breaking** Change `FDateField.suffixBuilder` type from `FFieldIconBuilder<FDateFieldStyle>?` to
+  `FFieldIconBuilder<FTextFieldStyle>?`.
+* **Breaking** Rename `FDateFieldStyle.fieldStyle` to `FDateFieldStyle.fieldStyles`. Type changed from
+  `FTextFieldStyle` to `FTextFieldSizeStyles`.
+
+* Fix `FDateField.calendar` clear button not resetting controller value to null.
 
 
 ### `FDialog`
@@ -62,6 +99,7 @@
 
 ### `FHeader`
 * Add `FHeaderVariant.root`.
+* Add `FHeaderStyle.slidableActions` for slide-across interaction between header actions.
 
 * **Breaking** Change `FHeaderStyle.decoration` type from `BoxDecoration` to `Decoration`.
 
@@ -69,11 +107,16 @@
 ### `FItem` & `FItemGroup`
 * Add `FItemVariant.primary`.
 * Add `FItem.onDoubleTap`.
+* Add `FItemStyle.shape` for clipping items.
 * Add `FItemGroupStyle.slideableItems` for slide-across interaction.
 
 * **Breaking** Change `FItemStyle.decoration` type from `FVariants<..., BoxDecoration, BoxDecorationDelta>` to
   `FVariants<..., Decoration, DecorationDelta>`.
 * **Breaking** Change `FItemGroupStyle.decoration` type from `BoxDecoration` to `Decoration`.
+* **Breaking** Rename `FItemStyle.border` to `FItemStyle.shape`.
+
+* Fix `FItemDivider.indented` not masking the gap area with the item's background color.
+* Fix `FItem` not being clipped to its shape.
 
 
 ### `FLineCalendar`
@@ -103,8 +146,43 @@
   `Decoration`.
 
 
+### `FSelect` & `FMultiSelect`
+* Add `FMultiSelect.size`.
+* Add `FMultiSelectFieldStyles`.
+* Add `FSelect.size`.
+* Add `FSelectSearchFieldProperties.size`.
+
+* Change `FSelectSection` layout to better align with the latest shadcn version.
+
+* **Breaking** Change `FMultiSelect.prefixBuilder` type from `FFieldIconBuilder<FMultiSelectStyle>?` to
+  `FFieldIconBuilder<FMultiSelectFieldStyle>?`.
+* **Breaking** Change `FMultiSelect.suffixBuilder` type from `FFieldIconBuilder<FMultiSelectStyle>?` to
+  `FFieldIconBuilder<FMultiSelectFieldStyle>?`.
+* **Breaking** Change `FSelect.prefixBuilder` type from `FFieldIconBuilder<FSelectStyle>?` to
+  `FFieldIconBuilder<FTextFieldStyle>?`.
+* **Breaking** Change `FSelect.suffixBuilder` type from `FFieldIconBuilder<FSelectStyle>?` to
+  `FFieldIconBuilder<FTextFieldStyle>?`.
+* **Breaking** Change `FSelectSearchFieldProperties.prefixBuilder` type from `FFieldIconBuilder<FSelectSearchStyle>?`
+  to `FFieldIconBuilder<FTextFieldStyle>?`.
+* **Breaking** Change `FSelectSearchFieldProperties.suffixBuilder` type from `FFieldIconBuilder<FSelectSearchStyle>?`
+  to `FFieldIconBuilder<FTextFieldStyle>?`.
+* **Breaking** Change `FMultiSelectTagBuilder` `style` parameter type from `FMultiSelectStyle` to
+  `FMultiSelectFieldStyle`.
+* **Breaking** Move `FMultiSelectStyle.tagStyle` to `FMultiSelectFieldStyle.tagStyle`.
+* **Breaking** Rename `FMultiSelectStyle.fieldStyle` to `FMultiSelectStyle.fieldStyles`. Type changed from
+  `FMultiSelectFieldStyle` to `FMultiSelectFieldStyles`.
+* **Breaking** Rename `FSelectStyle.fieldStyle` to `FSelectStyle.fieldStyles`. Type changed from `FTextFieldStyle` to
+  `FTextFieldSizeStyles`.
+* **Breaking** Rename `FSelectSearchStyle.fieldStyle` to `FSelectSearchStyle.fieldStyles`. Type changed from
+  `FTextFieldStyle` to `FTextFieldSizeStyles`.
+
+
 ### `FSidebar`
 * **Breaking** Change `FSidebarStyle.decoration` type from `BoxDecoration` to `Decoration`.
+
+
+### `FSlider`
+* Fix disabled slider ticks showing through active track due to transparency.
 
 
 ### `FTabs`
@@ -121,16 +199,58 @@
 * **Breaking** Change `FTappableStyle.pressedExitDuration` default from 0ms to 100ms.
 * **Breaking** Change `FTappableMotion.bounceUpDuration` default from 120ms to 100ms.
 
+* Fix incorrectly handling of platform changes.
+
+
+### `FTimeField`
+* Add `FTimeField.clearable`.
+* Add `FTimeField.size`.
+
+* **Breaking** Rename `FTimeFieldStyle.fieldStyle` to `FTimeFieldStyle.fieldStyles`. Type changed from
+  `FTextFieldStyle` to `FTextFieldSizeStyles`.
+
+* Fix `FTimeField.picker` not showing hint text when no initial time is provided.
+* Fix `FTimeField.picker` clear button not resetting controller value to null.
+
+
+### `FTextField` & `FTextFormField`
+* Add `FTextField.size` and `FTextFormField.size` for `sm`, `md`, and `lg` size variants.
+* Add `FTextFieldSizeStyles` and `FTextFieldSizeVariant`.
+
+* Fix `FTextField.clearable` clear icon not appearing immediately when text changes while focused.
+
+
+### `FTheme` & `FBasicTheme`
+* Add `FBorderRadius` with size tokens (`xs`, `sm`, `md`, `lg`, `xl`, `xl2`, `xl3`, `pill`).
+* Add color scheme constants to `FColors`.
+* Add `FTypography.xs3`.
+* Add `FTypography.xs2`.
+* Add `FTypography.inherit(touch: ...)`.
+* Add `FThemeData(touch: ...)`.
+
+* Re-add `FColors.disable(background: ...)` optional parameter for alpha-blending disabled colors against a background.
+* **Breaking** Change `FThemes.*.light`/`dark` from `FThemeData` to `FThemes.*.*.desktop/touch`.
+* **Breaking** Rename `FThemeData.textFieldStyle` to `FThemeData.textFieldStyles`. Type changed from `FTextFieldStyle`
+  to `FTextFieldSizeStyles`.
+* **Breaking** Change default `FTheme`/`FBasicTheme` text size from `md` to `sm`.
+* **Breaking** Change `FStyle.borderRadius` from `BorderRadius` to `FBorderRadius`.
+* **Breaking** Remove `FLerpBorderRadius`. Use `BorderRadius` instead.
+* **Breaking** Rename `FTypography.base` to `FTypography.md`.
+* **Breaking** Change `FTypography` default sizes — each token is now one level larger.
+
 
 ### `FTile` & `FTileGroup`
 * Add `FTileStyles.primary` resolving via `FItemVariant.primary`.
 * Add `FTile.onDoubleTap`.
+* Add `FTileStyle.shape` for clipping standalone tiles.
 * Add `FTileGroupStyle.slideableTiles` for slide-across interaction.
 
 * **Breaking** Change `FTileGroupStyle.decoration` type from `BoxDecoration` to `Decoration`.
 
 
 ### `FToast`
+* Change `FToast` layout to better align with the latest shadcn version.
+
 * **Breaking** Change `FToastStyle.decoration` type from `BoxDecoration` to `Decoration`.
 
 
@@ -140,15 +260,12 @@
 
 ### Others
 * Add `Decorations` extension on `Decoration` for extracting common visual properties.
-* Add `FBorderRadius` with size tokens (`xs`, `sm`, `md`, `lg`, `xl`, `xl2`, `xl3`, `pill`).
-
-* **Breaking** Rename `FBorderRadius.base` to `FBorderRadius.md`.
-* **Breaking** Rename `FTypography.base` to `FTypography.md`.
 * Add `FPlatformVariantConstraint` extension type.
 
-* Change default border shape from `RoundedRectangleBorder` to `RoundedSuperellipseBorder` in widget `.inherit()` constructors.
-* **Breaking** Change `FStyle.borderRadius` from `BorderRadius` to `FBorderRadius`.
-* **Breaking** Remove `FLerpBorderRadius`. Use `BorderRadius` instead.
+* Change default border shape from `RoundedRectangleBorder` to `RoundedSuperellipseBorder`.
+
+* **Breaking** Rename `desktop` parameter to `touch` (with inverted logic) and change from `bool desktop = false` to
+  `required bool touch` in all `.inherit()` constructors and `FThemeData(...)`.
 
 * Fix widget `.inherit()` constructors not using `FStyle.borderWidth` for `BorderSide` widths.
 

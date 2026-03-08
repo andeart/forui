@@ -34,7 +34,7 @@ class FSidebarItem extends StatefulWidget {
   /// To generate and customize this style:
   ///
   /// ```shell
-  /// dart run forui style create sidebar
+  /// dart run forui style create sidebar-item
   /// ```
   final FSidebarItemStyleDelta style;
 
@@ -287,7 +287,7 @@ class FSidebarItemStyle with Diagnosticable, _$FSidebarItemStyleFunctions {
   @override
   final FVariants<FTappableVariantConstraint, FTappableVariant, IconThemeData, IconThemeDataDelta> collapsibleIconStyle;
 
-  /// The spacing between child items. Defaults to 2.
+  /// The spacing between child items. Defaults to 4.
   @override
   final double childrenSpacing;
 
@@ -299,7 +299,7 @@ class FSidebarItemStyle with Diagnosticable, _$FSidebarItemStyleFunctions {
   @override
   final FVariants<FTappableVariantConstraint, FTappableVariant, Color, Delta> backgroundColor;
 
-  /// The padding around the content. Defaults to `EdgeInsets.symmetric(horizontal: 12, vertical: 10)`.
+  /// The padding around the content. Defaults to `EdgeInsets.all(8)`.
   @override
   final EdgeInsetsGeometry padding;
 
@@ -325,50 +325,64 @@ class FSidebarItemStyle with Diagnosticable, _$FSidebarItemStyleFunctions {
     required this.iconStyle,
     required this.collapsibleIconStyle,
     required this.backgroundColor,
+    required this.padding,
     required this.borderRadius,
     required this.tappableStyle,
     required this.focusedOutlineStyle,
     this.iconSpacing = 8,
     this.collapsibleIconSpacing = 8,
-    this.childrenSpacing = 2,
+    this.childrenSpacing = 4,
     this.childrenPadding = const .only(left: 26, top: 2),
-    this.padding = const .symmetric(horizontal: 12, vertical: 10),
     this.motion = const FSidebarItemMotion(),
   });
 
   /// Creates a [FSidebarItemStyle] that inherits its properties.
-  FSidebarItemStyle.inherit({required FColors colors, required FTypography typography, required FStyle style})
-    : this(
-        textStyle: FVariants.from(
-          typography.md.copyWith(color: colors.foreground, overflow: .ellipsis, height: 1),
-          variants: {
-            [.disabled]: .delta(color: colors.mutedForeground),
-          },
-        ),
-        iconStyle: FVariants.from(
-          IconThemeData(color: colors.foreground, size: 16),
-          variants: {
-            [.disabled]: .delta(color: colors.mutedForeground),
-          },
-        ),
-        collapsibleIconStyle: FVariants.from(
-          IconThemeData(color: colors.foreground, size: 16),
-          variants: {
-            [.disabled]: .delta(color: colors.mutedForeground),
-          },
-        ),
-        backgroundColor: FVariants(
-          colors.background,
-          variants: {
-            [.selected, .hovered, .pressed]: colors.secondary,
-            //
-            [.disabled]: colors.background,
-          },
-        ),
-        borderRadius: style.borderRadius.md,
-        tappableStyle: style.tappableStyle.copyWith(motion: FTappableMotion.none),
-        focusedOutlineStyle: style.focusedOutlineStyle.copyWith(spacing: 0),
-      );
+  factory FSidebarItemStyle.inherit({
+    required FColors colors,
+    required FTypography typography,
+    required FStyle style,
+    required bool touch,
+  }) {
+    EdgeInsetsGeometry padding;
+    if (touch) {
+      padding = const .symmetric(horizontal: 12, vertical: 14);
+    } else {
+      padding = const .all(8);
+    }
+
+    return FSidebarItemStyle(
+      textStyle: .from(
+        typography.sm.copyWith(color: colors.foreground, overflow: .ellipsis, height: 1),
+        variants: {
+          [.disabled]: .delta(color: colors.mutedForeground),
+        },
+      ),
+      iconStyle: .from(
+        IconThemeData(color: colors.foreground, size: 16),
+        variants: {
+          [.disabled]: .delta(color: colors.mutedForeground),
+        },
+      ),
+      collapsibleIconStyle: .from(
+        IconThemeData(color: colors.foreground, size: 16),
+        variants: {
+          [.disabled]: .delta(color: colors.mutedForeground),
+        },
+      ),
+      backgroundColor: FVariants(
+        colors.background,
+        variants: {
+          [.selected, .hovered, .pressed]: colors.secondary,
+          //
+          [.disabled]: colors.background,
+        },
+      ),
+      padding: padding,
+      borderRadius: style.borderRadius.md,
+      tappableStyle: style.tappableStyle.copyWith(motion: FTappableMotion.none),
+      focusedOutlineStyle: style.focusedOutlineStyle.copyWith(spacing: 0),
+    );
+  }
 }
 
 /// The motion-related properties for a [FSidebarItem].

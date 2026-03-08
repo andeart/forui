@@ -35,7 +35,7 @@ class FAvatar extends StatelessWidget {
   /// To generate and customize this style:
   ///
   /// ```shell
-  /// dart run forui style create accordion
+  /// dart run forui style create avatar
   /// ```
   final FAvatarStyleDelta style;
 
@@ -112,6 +112,6 @@ class FAvatarStyle with Diagnosticable, _$FAvatarStyleFunctions {
     : this(
         backgroundColor: colors.muted,
         foregroundColor: colors.mutedForeground,
-        textStyle: typography.md.copyWith(color: colors.mutedForeground, height: 0),
+        textStyle: typography.sm.copyWith(color: colors.mutedForeground),
       );
 }

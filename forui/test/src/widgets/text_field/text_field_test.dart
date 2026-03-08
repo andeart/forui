@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -79,7 +80,7 @@ void main() {
             DefaultCupertinoLocalizations.delegate,
             DefaultWidgetsLocalizations.delegate,
           ],
-          child: TestScaffold(theme: FThemes.neutral.light, child: const FTextField()),
+          child: TestScaffold(theme: FThemes.neutral.light.touch, child: const FTextField()),
         ),
       );
 
@@ -91,7 +92,7 @@ void main() {
     testWidgets('no icon when clearable return false', (tester) async {
       await tester.pumpWidget(
         TestScaffold.app(
-          theme: FThemes.neutral.light,
+          theme: FThemes.neutral.light.touch,
           child: FTextField(clearable: (_) => false),
         ),
       );
@@ -102,7 +103,7 @@ void main() {
     testWidgets('no icon when disabled', (tester) async {
       await tester.pumpWidget(
         TestScaffold.app(
-          theme: FThemes.neutral.light,
+          theme: FThemes.neutral.light.touch,
           child: FTextField(enabled: false, clearable: (_) => true),
         ),
       );
@@ -114,7 +115,7 @@ void main() {
     testWidgets('suffix & no icon when disabled', (tester) async {
       await tester.pumpWidget(
         TestScaffold.app(
-          theme: FThemes.neutral.light,
+          theme: FThemes.neutral.light.touch,
           child: FTextField(enabled: false, clearable: (_) => true, suffixBuilder: (_, _, _) => const SizedBox()),
         ),
       );
@@ -126,7 +127,7 @@ void main() {
     testWidgets('clears text-field', (tester) async {
       await tester.pumpWidget(
         TestScaffold.app(
-          theme: FThemes.neutral.light,
+          theme: FThemes.neutral.light.touch,
           child: FTextField(
             control: const .managed(initial: TextEditingValue(text: 'Testing')),
             clearable: (value) => value.text.isNotEmpty,
@@ -142,10 +143,37 @@ void main() {
       expect(find.text('Testing'), findsNothing);
     });
 
+    testWidgets('shows clear icon when controller text changes while focused', (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        TestScaffold.app(
+          theme: FThemes.neutral.light.touch,
+          child: FTextField(
+            control: .managed(controller: controller),
+            clearable: (value) => value.text.isNotEmpty,
+          ),
+        ),
+      );
+
+      // Focus the field first
+      await tester.tap(find.byType(EditableText));
+      await tester.pumpAndSettle();
+
+      expect(find.bySemanticsLabel('Clear'), findsNothing);
+
+      // Programmatically set text while already focused
+      controller.text = 'hello';
+      await tester.pumpAndSettle();
+
+      expect(find.bySemanticsLabel('Clear'), findsOneWidget);
+    });
+
     testWidgets('suffix & clears text-field', (tester) async {
       await tester.pumpWidget(
         TestScaffold.app(
-          theme: FThemes.neutral.light,
+          theme: FThemes.neutral.light.touch,
           child: FTextField(
             control: const .managed(initial: TextEditingValue(text: 'Testing')),
             clearable: (value) => value.text.isNotEmpty,
@@ -179,22 +207,6 @@ void main() {
     await tester.pumpWidget(TestScaffold.app(child: const FTextField(maxLines: null, expands: true)));
 
     expect(tester.takeException(), null);
-  });
-
-  testWidgets('height does not change due to visual density on different platforms', (tester) async {
-    debugDefaultTargetPlatformOverride = .macOS;
-    await tester.pumpWidget(TestScaffold.app(theme: FThemes.neutral.light, child: const FTextField()));
-    final macos = tester.getSize(find.byType(FTextField)).height;
-
-    await tester.pumpWidget(const SizedBox());
-
-    debugDefaultTargetPlatformOverride = .iOS;
-    await tester.pumpWidget(TestScaffold.app(theme: FThemes.neutral.light, child: const FTextField()));
-    final ios = tester.getSize(find.byType(FTextField)).height;
-
-    expect(macos, ios);
-
-    debugDefaultTargetPlatformOverride = null;
   });
 
   testWidgets('error does not cause overlay to fail', (tester) async {
@@ -239,5 +251,63 @@ void main() {
 
     expect(find.text('Error A'), findsNothing);
     expect(find.text('Error B'), findsOneWidget);
+  });
+
+  group('design system', skip: !Platform.isMacOS, () {
+    for (final (theme, themeName, sizes) in [
+      (
+        FThemes.neutral.light.desktop,
+        'desktop',
+        [
+          (FTextFieldSizeVariant.sm, 'sm', FThemes.neutral.light.desktop.style.sizes.field.sm),
+          (FTextFieldSizeVariant.md, 'md', FThemes.neutral.light.desktop.style.sizes.field.md),
+          (FTextFieldSizeVariant.lg, 'lg', FThemes.neutral.light.desktop.style.sizes.field.lg),
+        ],
+      ),
+      (
+        FThemes.neutral.light.touch,
+        'touch',
+        [
+          (FTextFieldSizeVariant.sm, 'sm', FThemes.neutral.light.touch.style.sizes.field.sm),
+          (FTextFieldSizeVariant.md, 'md', FThemes.neutral.light.touch.style.sizes.field.md),
+          (FTextFieldSizeVariant.lg, 'lg', FThemes.neutral.light.touch.style.sizes.field.lg),
+        ],
+      ),
+    ]) {
+      for (final (size, name, height) in sizes) {
+        testWidgets('$themeName $name default text field has consistent height ($height)', (tester) async {
+          await tester.pumpWidget(
+            TestScaffold.app(
+              theme: theme,
+              child: FTextField(size: size),
+            ),
+          );
+
+          expect(tester.getSize(find.byType(FTextField)).height, closeTo(height, 0.001));
+        });
+
+        testWidgets('$themeName $name email text field has consistent height ($height)', (tester) async {
+          await tester.pumpWidget(
+            TestScaffold.app(
+              theme: theme,
+              child: FTextField.email(size: size, label: null),
+            ),
+          );
+
+          expect(tester.getSize(find.byType(FTextField)).height, closeTo(height, 0.001));
+        });
+
+        testWidgets('$themeName $name password text field has consistent height ($height)', (tester) async {
+          await tester.pumpWidget(
+            TestScaffold.app(
+              theme: theme,
+              child: FTextField.password(size: size, label: null, key: const Key('password')),
+            ),
+          );
+
+          expect(tester.getSize(find.byKey(const Key('password'))).height, closeTo(height, 0.001));
+        });
+      }
+    }
   });
 }

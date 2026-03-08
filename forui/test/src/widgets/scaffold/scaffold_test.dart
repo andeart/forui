@@ -14,11 +14,12 @@ void main() {
       await tester.pumpWidget(
         TestScaffold(
           theme: FThemeData(
-            colors: FThemes.neutral.light.colors,
-            typography: FThemes.neutral.light.typography,
-            style: FThemes.neutral.light.style.copyWith(
+            colors: FThemes.neutral.light.touch.colors,
+            typography: FThemes.neutral.light.touch.typography,
+            style: FThemes.neutral.light.touch.style.copyWith(
               iconStyle: const .value(IconThemeData(color: testIconColor, size: testIconSize)),
             ),
+            touch: true,
           ),
           child: const FScaffold(child: Center(child: Icon(FIcons.star))),
         ),

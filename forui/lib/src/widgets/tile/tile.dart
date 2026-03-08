@@ -40,6 +40,8 @@ part 'tile.design.dart';
 /// );
 /// ```
 ///
+/// {@macro forui.foundation.FTappableGroup.overlay}
+///
 ///
 /// See:
 /// * https://forui.dev/docs/tile/tile for working examples.
@@ -367,6 +369,7 @@ class FTileStyle extends FItemStyle with Diagnosticable, _$FTileStyleFunctions {
     required super.rawItemContentStyle,
     required super.tappableStyle,
     required super.focusedOutlineStyle,
+    required super.shape,
     super.margin = .zero,
   });
 
@@ -407,6 +410,7 @@ class FTileStyle extends FItemStyle with Diagnosticable, _$FTileStyleFunctions {
           pressedExitDuration: const Duration(milliseconds: 25),
         ),
         focusedOutlineStyle: style.focusedOutlineStyle,
+        shape: RoundedSuperellipseBorder(borderRadius: style.borderRadius.md),
       );
 }
 
@@ -419,11 +423,11 @@ class FTileContentStyle extends FItemContentStyle with _$FTileContentStyleFuncti
     required super.subtitleTextStyle,
     required super.detailsTextStyle,
     required super.suffixIconStyle,
-    super.padding = const .fromLTRB(15, 13, 10, 13),
-    super.prefixIconSpacing,
-    super.titleSpacing,
-    super.middleSpacing,
-    super.suffixIconSpacing,
+    super.padding = const .directional(start: 15, top: 14.5, bottom: 14.5, end: 13),
+    super.prefixIconSpacing = 10,
+    super.titleSpacing = 3,
+    super.middleSpacing = 4,
+    super.suffixIconSpacing = 5,
   });
 
   /// Creates a [FTileContentStyle] that inherits its properties.
@@ -437,31 +441,31 @@ class FTileContentStyle extends FItemContentStyle with _$FTileContentStyleFuncti
     final disabledMutedForeground = colors.disable(mutedForeground);
     return FTileContentStyle(
       prefixIconStyle: FVariants.from(
-        IconThemeData(color: prefix, size: 18),
+        IconThemeData(color: prefix, size: typography.md.fontSize),
         variants: {
           [.disabled]: .delta(color: colors.disable(prefix)),
         },
       ),
       titleTextStyle: FVariants.from(
-        typography.md.copyWith(color: foreground),
+        typography.sm.copyWith(color: foreground),
         variants: {
           [.disabled]: .delta(color: colors.disable(foreground)),
         },
       ),
       subtitleTextStyle: FVariants.from(
-        typography.xs.copyWith(color: mutedForeground),
+        typography.xs2.copyWith(color: mutedForeground),
         variants: {
           [.disabled]: .delta(color: disabledMutedForeground),
         },
       ),
       detailsTextStyle: FVariants.from(
-        typography.md.copyWith(color: mutedForeground),
+        typography.sm.copyWith(color: mutedForeground),
         variants: {
           [.disabled]: .delta(color: disabledMutedForeground),
         },
       ),
       suffixIconStyle: FVariants.from(
-        IconThemeData(color: mutedForeground, size: 18),
+        IconThemeData(color: mutedForeground, size: typography.md.fontSize),
         variants: {
           [.disabled]: .delta(color: disabledMutedForeground),
         },
@@ -476,8 +480,8 @@ class FRawTileContentStyle extends FRawItemContentStyle with _$FRawTileContentSt
   FRawTileContentStyle({
     required super.prefixIconStyle,
     required super.childTextStyle,
-    super.padding = const .fromLTRB(15, 13, 10, 13),
-    super.prefixIconSpacing,
+    super.padding = const .directional(start: 15, top: 14.5, bottom: 14.5, end: 13),
+    super.prefixIconSpacing = 10,
   });
 
   /// Creates a [FRawTileContentStyle] that inherits its properties.
@@ -488,15 +492,15 @@ class FRawTileContentStyle extends FRawItemContentStyle with _$FRawTileContentSt
     required Color color,
   }) : this(
          prefixIconStyle: FVariants.from(
-           IconThemeData(color: prefix, size: 18),
+           IconThemeData(color: prefix, size: typography.md.fontSize),
            variants: {
              [.disabled]: .delta(color: colors.disable(prefix)),
            },
          ),
-         childTextStyle: FVariants(
-           typography.md.copyWith(color: color),
+         childTextStyle: FVariants.from(
+           typography.sm.copyWith(color: color),
            variants: {
-             [.disabled]: typography.md.copyWith(color: colors.disable(color)),
+             [.disabled]: .delta(color: colors.disable(color)),
            },
          ),
        );

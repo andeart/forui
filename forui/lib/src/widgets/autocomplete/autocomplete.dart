@@ -19,9 +19,23 @@ import 'package:forui/src/widgets/popover/popover_controller.dart';
 typedef FAutoCompleteContentBuilder =
     List<FAutocompleteItemMixin> Function(BuildContext context, String query, Iterable<String> values);
 
+/// A builder that wraps [FAutocomplete]'s popover content.
+typedef FAutocompletePopoverBuilder =
+    Widget Function(
+      BuildContext context,
+      FAutocompleteController controller,
+      FPopoverController popoverController,
+      Widget content,
+    );
+
 /// An autocomplete provides a list of suggestions based on the user's input and shows typeahead text for the first match.
 ///
 /// It is a [FormField] and therefore can be used in a [Form] widget.
+///
+/// ## Not a searchable select
+/// An autocomplete is not a searchable select. it is a text-field with suggestions. Values are not limited to one of
+/// suggestions, users can type anything. If you need a searchable select, use [FSelect.search] or [FMultiSelect.search]
+/// instead.
 ///
 /// ## Note
 /// The autocomplete does not support using arrow keys to navigate the suggestions on web.
@@ -47,6 +61,9 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
   }
 
   static bool _clearable(TextEditingValue _) => false;
+
+  static Widget _popoverBuilder(BuildContext _, FAutocompleteController _, FPopoverController _, Widget content) =>
+      content;
 
   static Widget _builder(BuildContext _, FAutocompleteStyle _, Set<FTextFieldVariant> _, Widget? child) => child!;
 
@@ -242,6 +259,11 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
   /// {@macro forui.text_field.clearable}
   final bool Function(TextEditingValue value) clearable;
 
+  /// A builder that wraps the entire popover content with arbitrary widgets.
+  ///
+  /// Defaults to returning the content as-is.
+  final FAutocompletePopoverBuilder popoverBuilder;
+
   @override
   final FormFieldSetter<String>? onSaved;
 
@@ -385,6 +407,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     FFieldIconBuilder<FAutocompleteStyle>? prefixBuilder,
     FFieldIconBuilder<FAutocompleteStyle>? suffixBuilder,
     bool Function(TextEditingValue value) clearable = _clearable,
+    FAutocompletePopoverBuilder popoverBuilder = _popoverBuilder,
     FormFieldSetter<String>? onSaved,
     VoidCallback? onReset,
     FormFieldValidator<String>? validator,
@@ -474,6 +497,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
          prefixBuilder: prefixBuilder,
          suffixBuilder: suffixBuilder,
          clearable: clearable,
+         popoverBuilder: popoverBuilder,
          onSaved: onSaved,
          onReset: onReset,
          validator: validator,
@@ -562,6 +586,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     this.prefixBuilder,
     this.suffixBuilder,
     this.clearable = _clearable,
+    this.popoverBuilder = _popoverBuilder,
     this.onSaved,
     this.onReset,
     this.validator,
@@ -659,6 +684,7 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
       ..add(ObjectFlagProperty.has('prefixBuilder', prefixBuilder))
       ..add(ObjectFlagProperty.has('suffixBuilder', suffixBuilder))
       ..add(ObjectFlagProperty.has('clearable', clearable))
+      ..add(ObjectFlagProperty.has('popoverBuilder', popoverBuilder))
       ..add(ObjectFlagProperty.has('onSaved', onSaved))
       ..add(ObjectFlagProperty.has('onReset', onReset))
       ..add(ObjectFlagProperty.has('validator', validator))
@@ -918,18 +944,23 @@ class _State extends State<FAutocomplete> with TickerProviderStateMixin {
                   _previous = value;
                   _controller.text = value;
                 },
-                child: Content(
-                  controller: _controller,
-                  style: style.contentStyle,
-                  enabled: widget.enabled,
-                  scrollController: widget.contentScrollController,
-                  physics: widget.contentPhysics,
-                  divider: widget.contentDivider,
-                  data: _data,
-                  loadingBuilder: widget.contentLoadingBuilder,
-                  builder: widget.contentBuilder,
-                  emptyBuilder: widget.contentEmptyBuilder,
-                  errorBuilder: widget.contentErrorBuilder,
+                child: widget.popoverBuilder(
+                  context,
+                  _controller,
+                  _popoverController,
+                  Content(
+                    controller: _controller,
+                    style: style.contentStyle,
+                    enabled: widget.enabled,
+                    scrollController: widget.contentScrollController,
+                    physics: widget.contentPhysics,
+                    divider: widget.contentDivider,
+                    data: _data,
+                    loadingBuilder: widget.contentLoadingBuilder,
+                    builder: widget.contentBuilder,
+                    emptyBuilder: widget.contentEmptyBuilder,
+                    errorBuilder: widget.contentErrorBuilder,
+                  ),
                 ),
               ),
             ),

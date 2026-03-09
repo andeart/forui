@@ -33,6 +33,7 @@ import 'package:forui/src/widgets/toast/toaster_stack.dart';
 FToasterEntry showFToast({
   required BuildContext context,
   required Widget title,
+  FToastVariant variant = .primary,
   FToastStyleDelta style = const .context(),
   Widget? icon,
   Widget? description,
@@ -63,6 +64,7 @@ FToasterEntry showFToast({
   return state.show(
     context: context,
     builder: (context, entry) => FToast(
+      variant: variant,
       style: style,
       icon: icon,
       title: title,
@@ -107,6 +109,7 @@ FToasterEntry showFToast({
 FToasterEntry showRawFToast({
   required BuildContext context,
   required Widget Function(BuildContext context, FToasterEntry entry) builder,
+  FToastVariant variant = .primary,
   FToastStyleDelta style = const .context(),
   FToastAlignment? alignment,
   List<AxisDirection>? swipeToDismiss,
@@ -134,6 +137,7 @@ FToasterEntry showRawFToast({
   return state.show(
     context: context,
     builder: builder,
+    variant: variant,
     style: style,
     alignment: alignment,
     swipeToDismiss: swipeToDismiss,
@@ -307,6 +311,7 @@ class FToasterState extends State<FToaster> {
   FToasterEntry show({
     required Widget Function(BuildContext context, FToasterEntry entry) builder,
     BuildContext? context,
+    FToastVariant variant = .primary,
     FToastStyleDelta style = const .context(),
     FToastAlignment? alignment,
     List<AxisDirection>? swipeToDismiss,
@@ -323,7 +328,7 @@ class FToasterState extends State<FToaster> {
     final directions = swipeToDismiss ?? [if (resolved.x < 1) .left else .right];
 
     final entry = ToasterEntry(
-      style(toasterStyle.toastStyle),
+      style(toasterStyle.toastStyles.resolve({variant, context.platformVariant})),
       resolved,
       directions,
       dismissThreshold,
@@ -414,7 +419,7 @@ mixin FToasterEntry {
 @internal
 class ToasterEntry with FToasterEntry {
   final GlobalKey key = GlobalKey();
-  final FToastStyle? style;
+  final FToastStyle style;
   final Alignment alignment;
   List<AxisDirection> swipeToDismiss;
   final double dismissThreshold;

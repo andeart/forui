@@ -33,6 +33,7 @@ final multiSelect = FMultiSelect<String>(
   suffixBuilder: FMultiSelect.defaultIconBuilder,
   // {@endcategory}
   // {@category "Content"}
+  popoverBuilder: (context, controller, popoverController, content) => content,
   contentAnchor: .topStart,
   fieldAnchor: .bottomStart,
   contentConstraints: const FAutoWidthPortalConstraints(maxHeight: 300),
@@ -52,6 +53,7 @@ final multiSelect = FMultiSelect<String>(
   focusNode: null,
   // {@endcategory}
   // {@category "Core"}
+  size: .md,
   style: const .delta(emptyTextStyle: .delta()),
   enabled: true,
   items: const {'Apple': 'apple', 'Banana': 'banana', 'Cherry': 'cherry'},
@@ -87,6 +89,7 @@ final multiSelectRich = FMultiSelect<String>.rich(
   suffixBuilder: FMultiSelect.defaultIconBuilder,
   // {@endcategory}
   // {@category "Content"}
+  popoverBuilder: (context, controller, popoverController, content) => content,
   contentAnchor: .topStart,
   fieldAnchor: .bottomStart,
   contentConstraints: const FAutoWidthPortalConstraints(maxHeight: 300),
@@ -106,6 +109,7 @@ final multiSelectRich = FMultiSelect<String>.rich(
   focusNode: null,
   // {@endcategory}
   // {@category "Core"}
+  size: .md,
   style: const .delta(emptyTextStyle: .delta()),
   enabled: true,
   format: Text.new,
@@ -146,6 +150,7 @@ final multiSelectSearch = FMultiSelect<String>.search(
   suffixBuilder: FMultiSelect.defaultIconBuilder,
   // {@endcategory}
   // {@category "Content"}
+  popoverBuilder: (context, controller, popoverController, content) => content,
   searchFieldProperties: const FSelectSearchFieldProperties(),
   contentAnchor: .topStart,
   fieldAnchor: .bottomStart,
@@ -169,6 +174,7 @@ final multiSelectSearch = FMultiSelect<String>.search(
   // {@endcategory}
   // {@category "Core"}
   const {'Apple': 'apple', 'Banana': 'banana', 'Cherry': 'cherry'},
+  size: .md,
   style: const .delta(emptyTextStyle: .delta()),
   enabled: true,
   filter: (query) => ['apple', 'banana', 'cherry'].where((e) => e.startsWith(query)),
@@ -204,6 +210,7 @@ final multiSelectSearchBuilder = FMultiSelect<String>.searchBuilder(
   suffixBuilder: FMultiSelect.defaultIconBuilder,
   // {@endcategory}
   // {@category "Content"}
+  popoverBuilder: (context, controller, popoverController, content) => content,
   searchFieldProperties: const FSelectSearchFieldProperties(),
   contentAnchor: .topStart,
   fieldAnchor: .bottomStart,
@@ -226,6 +233,7 @@ final multiSelectSearchBuilder = FMultiSelect<String>.searchBuilder(
   focusNode: null,
   // {@endcategory}
   // {@category "Core"}
+  size: .md,
   style: const .delta(emptyTextStyle: .delta()),
   enabled: true,
   filter: (query) => ['apple', 'banana', 'cherry'].where((e) => e.startsWith(query)),
@@ -277,5 +285,17 @@ final FPopoverControl popoverExternal = .managed(
   controller: FPopoverController(vsync: vsync, shown: false, motion: const FPopoverMotion()),
   onChange: (shown) {},
 );
+
+// {@category "Size" "Small"}
+/// The multi-select's small size.
+const FTextFieldSizeVariant sm = .sm;
+
+// {@category "Size" "Medium"}
+/// The multi-select's medium (default) size.
+const FTextFieldSizeVariant md = .md;
+
+// {@category "Size" "Large"}
+/// The multi-select's large size.
+const FTextFieldSizeVariant lg = .lg;
 
 TickerProvider get vsync => throw UnimplementedError();

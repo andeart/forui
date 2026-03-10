@@ -650,6 +650,7 @@ class FTextFormField extends StatelessWidget with FFormFieldProperties<String> {
         maxLength: maxLength,
         maxLengthEnforcement: maxLengthEnforcement,
         onTap: onTap,
+        onTapOutside: onTapOutside,
         onTapAlwaysCalled: onTapAlwaysCalled,
         onEditingComplete: onEditingComplete,
         onSubmit: onSubmit,

@@ -53,6 +53,15 @@ class _SandboxState extends State<Sandbox> {
               FButton(variant: .destructive, onPress: () {}, child: Text('Destructive')),
             ],
           ),
+          FTextFormField(
+            label: const Text('TextFormField'),
+            maxLength: 6,
+            keyboardType: .number,
+            textInputAction: .send,
+            onTapOutside: (event) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+          ),
         ],
       ),
     ),

@@ -122,6 +122,54 @@ void main() {
       expect(tester.takeException(), null);
     });
 
+    testWidgets('typeahead not shown when unfocused', (tester) async {
+      final focus = autoDispose(FocusNode());
+      await tester.pumpWidget(
+        TestScaffold.app(
+          child: FAutocomplete(
+            key: key,
+            control: .managed(controller: controller),
+            focusNode: focus,
+            items: fruits,
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byKey(key), 'App');
+      await tester.pumpAndSettle();
+
+      expect(controller.current, isNotNull);
+
+      focus.unfocus();
+      await tester.pumpAndSettle();
+
+      expect(focus.hasFocus, false);
+      final span = controller.buildTextSpan(context: tester.element(find.byType(EditableText)), withComposing: false);
+      expect(span.toPlainText(), 'App');
+    });
+
+    testWidgets('typeahead not shown when disabled but focused', (tester) async {
+      await tester.pumpWidget(
+        TestScaffold.app(
+          child: FAutocomplete(
+            key: key,
+            control: .managed(controller: controller),
+            enabled: false,
+            items: fruits,
+          ),
+        ),
+      );
+
+      await tester.tap(find.byKey(key));
+      await tester.pumpAndSettle();
+
+      controller.text = 'App';
+      await tester.pumpAndSettle();
+
+      final span = controller.buildTextSpan(context: tester.element(find.byType(EditableText)), withComposing: false);
+      expect(span.toPlainText(), 'App');
+    });
+
     testWidgets('tab to focus', (tester) async {
       final focus = autoDispose(FocusNode());
       await tester.pumpWidget(
@@ -274,6 +322,126 @@ void main() {
       expect(buttonFocus.hasFocus, false);
       expect(find.text('Banana'), findsOne);
     });
+  });
+
+  for (final (platform, retain) in [(TargetPlatform.macOS, true), (TargetPlatform.iOS, false)]) {
+    group('retainFocus on $platform', () {
+      testWidgets('default behavior', (tester) async {
+        debugDefaultTargetPlatformOverride = platform;
+        final focus = autoDispose(FocusNode());
+        await tester.pumpWidget(
+          TestScaffold.app(
+            child: FAutocomplete(
+              key: key,
+              control: .managed(controller: controller),
+              popoverControl: .managed(controller: popoverController),
+              focusNode: focus,
+              items: fruits,
+            ),
+          ),
+        );
+
+        await tester.enterText(find.byKey(key), 'app');
+        await tester.pumpAndSettle();
+
+        expect(popoverController.status.isForwardOrCompleted, true);
+        expect(focus.hasFocus, true);
+
+        await tester.tap(find.text('Apple'));
+        await tester.pumpAndSettle();
+
+        expect(controller.text, 'Apple');
+        expect(popoverController.status.isForwardOrCompleted, false);
+        expect(focus.hasFocus, retain);
+
+        debugDefaultTargetPlatformOverride = null;
+      });
+
+      testWidgets('retains focus', (tester) async {
+        debugDefaultTargetPlatformOverride = platform;
+        final focus = autoDispose(FocusNode());
+        await tester.pumpWidget(
+          TestScaffold.app(
+            child: FAutocomplete(
+              key: key,
+              control: .managed(controller: controller),
+              popoverControl: .managed(controller: popoverController),
+              focusNode: focus,
+              retainFocus: true,
+              items: fruits,
+            ),
+          ),
+        );
+
+        await tester.enterText(find.byKey(key), 'app');
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Apple'));
+        await tester.pumpAndSettle();
+
+        expect(controller.text, 'Apple');
+        expect(popoverController.status.isForwardOrCompleted, false);
+        expect(focus.hasFocus, true);
+
+        debugDefaultTargetPlatformOverride = null;
+      });
+
+      testWidgets('does not retain focus', (tester) async {
+        debugDefaultTargetPlatformOverride = platform;
+        final focus = autoDispose(FocusNode());
+        await tester.pumpWidget(
+          TestScaffold.app(
+            child: FAutocomplete(
+              key: key,
+              control: .managed(controller: controller),
+              popoverControl: .managed(controller: popoverController),
+              focusNode: focus,
+              retainFocus: false,
+              items: fruits,
+            ),
+          ),
+        );
+
+        await tester.enterText(find.byKey(key), 'app');
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Apple'));
+        await tester.pumpAndSettle();
+
+        expect(controller.text, 'Apple');
+        expect(popoverController.status.isForwardOrCompleted, false);
+        expect(focus.hasFocus, false);
+
+        debugDefaultTargetPlatformOverride = null;
+      });
+    });
+  }
+
+  testWidgets('enter closes popover', (tester) async {
+    final focus = autoDispose(FocusNode());
+    await tester.pumpWidget(
+      TestScaffold.app(
+        child: FAutocomplete(
+          key: key,
+          control: .managed(controller: controller),
+          popoverControl: .managed(controller: popoverController),
+          focusNode: focus,
+          items: fruits,
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byKey(key), 'app');
+    await tester.pumpAndSettle();
+
+    expect(popoverController.status.isForwardOrCompleted, true);
+    expect(find.text('Apple'), findsOne);
+
+    await tester.testTextInput.receiveAction(.done);
+    await tester.pumpAndSettle();
+
+    expect(focus.hasFocus, false);
+    expect(popoverController.status.isForwardOrCompleted, false);
   });
 
   for (final platform in [TargetPlatform.macOS, TargetPlatform.iOS]) {

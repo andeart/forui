@@ -12,11 +12,17 @@ sizes consistent across each platform.
 
 
 ### `FAutocomplete`
+* Add `FAutocomplete.retainFocus`.
 * Add `FAutocomplete.popoverBuilder`.
 * Add `FAutocomplete.size`.
 * Add `FAutocompleteSizeStyles`.
 * Add `FAutocompleteFieldStyle`.
 
+* Fix `FAutocomplete` not closing suggestions popover when pressing enter/done.
+* Fix `FAutocomplete` showing typeahead text when disabled or unfocused.
+
+* Change `FAutocompleteFieldStyle.typeaheadTextStyle` type from `FVariants<..., TextStyle, ...>` to
+  `FVariants<..., TextStyle?, ...>`.
 * Change `FAutocompleteSection` layout to better align with the latest shadcn version.
 
 * **Breaking** Rename `FAutocompleteStyle.fieldStyle` to `FAutocompleteStyle.fieldStyles`. Type changed from
@@ -223,6 +229,7 @@ sizes consistent across each platform.
 * Add `FTextFieldSizeStyles` and `FTextFieldSizeVariant`.
 
 * Fix `FTextField.clearable` clear icon not appearing immediately when text changes while focused.
+* Fix `FTextFormField.onTapOutside` not being used internally.
 
 
 ### `FTheme` & `FBasicTheme`
@@ -273,6 +280,7 @@ sizes consistent across each platform.
   `required bool touch` in all `.inherit()` constructors and `FThemeData(...)`.
 
 * Fix widget `.inherit()` constructors not using `FStyle.borderWidth` for `BorderSide` widths.
+* Fix `FVariants.resolve` returning `base` instead of `null` when a variant is explicitly set to `null`.
 
 
 ## 0.19.0

@@ -12,23 +12,28 @@ sizes consistent across each platform.
 
 
 ### `FAutocomplete`
+* Add `FAutocomplete.contentUseViewPadding`.
+* Add `FAutocomplete.contentUseViewInsets`.
 * Add `FAutocomplete.retainFocus`.
 * Add `FAutocomplete.popoverBuilder`.
 * Add `FAutocomplete.size`.
-* Add `FAutocompleteSizeStyles`.
+* Add `FAutocompleteFieldSizeStyles`.
 * Add `FAutocompleteFieldStyle`.
-
-* Fix `FAutocomplete` not closing suggestions popover when pressing enter/done.
-* Fix `FAutocomplete` showing typeahead text when disabled or unfocused.
 
 * Change `FAutocompleteFieldStyle.typeaheadTextStyle` type from `FVariants<..., TextStyle, ...>` to
   `FVariants<..., TextStyle?, ...>`.
 * Change `FAutocompleteSection` layout to better align with the latest shadcn version.
 
 * **Breaking** Rename `FAutocompleteStyle.fieldStyle` to `FAutocompleteStyle.fieldStyles`. Type changed from
-  `FTextFieldStyle` to `FAutocompleteSizeStyles`.
+  `FTextFieldStyle` to `FAutocompleteFieldSizeStyles`.
 * **Breaking** Move `FAutocompleteStyle.composingTextStyle` and `FAutocompleteStyle.typeaheadTextStyle` to
   `FAutocompleteFieldStyle`.
+* **Breaking** Remove `FAutocomplete.defaultClearable`. Use `FTextField.defaultClearable` instead.
+* **Breaking** Remove `FAutocomplete.defaultBuilder`. Use `FTextField.defaultBuilder` instead.
+* **Breaking** Remove `FAutocomplete.defaultPopoverBuilder`. Use `FPopover.defaultPopoverBuilder` instead.
+
+* Fix `FAutocomplete` not closing suggestions popover when pressing enter/done.
+* Fix `FAutocomplete` showing typeahead text when disabled or unfocused.
 
 
 ### `FBadge`
@@ -38,6 +43,10 @@ sizes consistent across each platform.
   of `null`.
 * **Breaking** Change `FBadgeStyle.decoration` type from `BoxDecoration` to `Decoration`.
 * **Breaking** Remove `FBadgeStyles.defaultBadgeRadius`. Use `FBorderRadius.pill` instead.
+
+
+### `FBreadcrumb`
+* Add `FBreadcrumbItem.collapsed(intrinsicWidth: ...)`.
 
 
 ### `FBottomNavigationBar`
@@ -60,6 +69,8 @@ sizes consistent across each platform.
 
 
 ### `FCalendar`
+* Add `FCalendarControl.defaultSelectable`.
+
 * **Breaking** Change `FCalendarStyle.decoration` type from `BoxDecoration` to `Decoration`.
 
 
@@ -86,6 +97,8 @@ sizes consistent across each platform.
 
 
 ### `FDateField`
+* Add `FDateFieldCalendarProperties.useViewPadding`.
+* Add `FDateFieldCalendarProperties.useViewInsets`.
 * Add `FDateField.popoverBuilder`.
 * Add `FDateField.size`.
 
@@ -95,6 +108,8 @@ sizes consistent across each platform.
   `FFieldIconBuilder<FTextFieldStyle>?`.
 * **Breaking** Rename `FDateFieldStyle.fieldStyle` to `FDateFieldStyle.fieldStyles`. Type changed from
   `FTextFieldStyle` to `FTextFieldSizeStyles`.
+* **Breaking** Remove `FDateField.defaultFieldBuilder`. Use `FTextField.defaultBuilder` instead.
+* **Breaking** Remove `FDateField.defaultPopoverBuilder`. Use `FPopover.defaultPopoverBuilder` instead.
 
 * Fix `FDateField.calendar` clear button not resetting controller value to null.
 
@@ -115,19 +130,24 @@ sizes consistent across each platform.
 ### `FItem` & `FItemGroup`
 * Add `FItemVariant.primary`.
 * Add `FItem.onDoubleTap`.
+* Add `FItemGroup.intrinsicWidth`.
 * Add `FItemStyle.shape` for clipping items.
 * Add `FItemGroupStyle.slideableItems` for slide-across interaction.
+* Add `FItemContentStyle.unsuffixedPadding`.
 
 * **Breaking** Change `FItemStyle.decoration` type from `FVariants<..., BoxDecoration, BoxDecorationDelta>` to
   `FVariants<..., Decoration, DecorationDelta>`.
 * **Breaking** Change `FItemGroupStyle.decoration` type from `BoxDecoration` to `Decoration`.
 * **Breaking** Rename `FItemStyle.border` to `FItemStyle.shape`.
+* **Breaking** Rename `FItemContentStyle.padding` to `FItemContentStyle.suffixedPadding`.
 
 * Fix `FItemDivider.indented` not masking the gap area with the item's background color.
 * Fix `FItem` not being clipped to its shape.
 
 
 ### `FLineCalendar`
+* Add `FLineCalendar.defaultBuilder`.
+
 * **Breaking** Change `FLineCalendarStyle.decoration` type from `FVariants<..., BoxDecoration, BoxDecorationDelta>` to
   `FVariants<..., Decoration, DecorationDelta>`.
 
@@ -138,7 +158,36 @@ sizes consistent across each platform.
 
 
 ### `FPopover`
+* Add `FPopover.useViewPadding`.
+* Add `FPopover.useViewInsets`.
+* Add `FPopover.defaultBuilder`.
+* Add `FPopover.defaultPopoverBuilder`.
+
+* **Breaking** Rename `FPopoverStyle.viewPadding` to `FPopoverStyle.popoverPadding`.
 * **Breaking** Change `FPopoverStyle.decoration` type from `BoxDecoration` to `Decoration`.
+
+
+### `FPopoverMenu`
+* Add `FPopoverMenu.intrinsicWidth`.
+* Add `FPopoverMenu.useViewPadding`.
+* Add `FPopoverMenu.useViewInsets`.
+* Add `FPopoverMenu.defaultItemBuilder`.
+* Add `FPopoverMenu.defaultTileBuilder`.
+
+* Change `FPopoverMenu` to intrinsically size to menu contents.
+
+* **Breaking** Remove `FPopoverMenu.defaultBuilder`. Use `FPopover.defaultBuilder` instead.
+
+
+### `FPortal`
+* Add `FPortal.useViewPadding`.
+* Add `FPortal.useViewInsets`.
+* Add `FPortal.padding`.
+
+* **Breaking** Remove `FPortal.viewInsets`. Use `FPortal.useViewPadding`, `FPortal.useViewInsets`, and `FPortal.padding`
+  instead.
+
+* Fix portal not recalculating overflow whenever the child moves.
 
 
 ### `FProgress`
@@ -146,6 +195,8 @@ sizes consistent across each platform.
 
 
 ### `FResizable`
+* Add `FResizable.defaultLabel`.
+
 * **Breaking** Change `FResizableDividerThumbStyle.decoration` type from `BoxDecoration` to `Decoration`.
 
 
@@ -155,10 +206,14 @@ sizes consistent across each platform.
 
 
 ### `FSelect` & `FMultiSelect`
+* Add `FSelect.contentUseViewPadding`.
+* Add `FSelect.contentUseViewInsets`.
+* Add `FMultiSelect.contentUseViewPadding`.
+* Add `FMultiSelect.contentUseViewInsets`.
 * Add `FSelect.popoverBuilder`.
 * Add `FMultiSelect.popoverBuilder`.
 * Add `FMultiSelect.size`.
-* Add `FMultiSelectFieldStyles`.
+* Add `FMultiSelectFieldSizeStyles`.
 * Add `FSelect.size`.
 * Add `FSelectSearchFieldProperties.size`.
 
@@ -180,11 +235,19 @@ sizes consistent across each platform.
   `FMultiSelectFieldStyle`.
 * **Breaking** Move `FMultiSelectStyle.tagStyle` to `FMultiSelectFieldStyle.tagStyle`.
 * **Breaking** Rename `FMultiSelectStyle.fieldStyle` to `FMultiSelectStyle.fieldStyles`. Type changed from
-  `FMultiSelectFieldStyle` to `FMultiSelectFieldStyles`.
+  `FMultiSelectFieldStyle` to `FMultiSelectFieldSizeStyles`.
 * **Breaking** Rename `FSelectStyle.fieldStyle` to `FSelectStyle.fieldStyles`. Type changed from `FTextFieldStyle` to
   `FTextFieldSizeStyles`.
 * **Breaking** Rename `FSelectSearchStyle.fieldStyle` to `FSelectSearchStyle.fieldStyles`. Type changed from
   `FTextFieldStyle` to `FTextFieldSizeStyles`.
+* **Breaking** Remove `FSelect.defaultFieldBuilder`. Use `FTextField.defaultBuilder` instead.
+* **Breaking** Remove `FSelect.defaultPopoverBuilder`. Use `FPopover.defaultPopoverBuilder` instead.
+* **Breaking** Remove `FSelect.defaultValidator`. Use `FFormFieldProperties.defaultValidator` instead.
+* **Breaking** Remove `FMultiSelect.defaultPopoverBuilder`. Use `FPopover.defaultPopoverBuilder` instead.
+* **Breaking** Remove `FMultiSelect.defaultValidator`. Use `FFormFieldProperties.defaultValidator` instead.
+* **Breaking** Remove `FSelectSearchFieldProperties.defaultClearable`. Use `FTextField.defaultClearable` instead.
+
+* Fix `FSelect` and `FMultiSelect` autofocusing first item on touch devices.
 
 
 ### `FSidebar`
@@ -192,6 +255,9 @@ sizes consistent across each platform.
 
 
 ### `FSlider`
+* Add `FSlider.defaultTooltipBuilder`.
+* Add `FSlider.defaultSemanticValueFormatter`.
+
 * Fix disabled slider ticks showing through active track due to transparency.
 
 
@@ -204,6 +270,7 @@ sizes consistent across each platform.
 ### `FTappable` & `FTappableGroup`
 * Add `FTappableGroup` that enables slide-across interaction between `FTappable`s.
 * Add slide-across long press support to `FTappableGroup`.
+* Add `FTappable.defaultBuilder`.
 
 * **Breaking** Change `FTappableStyle.pressedEnterDuration` default from 200ms to 100ms.
 * **Breaking** Change `FTappableStyle.pressedExitDuration` default from 0ms to 100ms.
@@ -212,13 +279,27 @@ sizes consistent across each platform.
 * Fix incorrectly handling of platform changes.
 
 
+### `FSelectMenuTile`
+* Add `FSelectMenuTile.menuIntrinsicWidth`.
+* Add `FSelectMenuTile.menuUseViewPadding`.
+* Add `FSelectMenuTile.menuUseViewInsets`.
+
+
+### `FSelectTileGroup`
+* Add `FSelectTileGroup.intrinsicWidth`.
+
+
 ### `FTimeField`
+* Add `FTimeFieldPickerProperties.useViewPadding`.
+* Add `FTimeFieldPickerProperties.useViewInsets`.
 * Add `FTimeField.clearable`.
 * Add `FTimeField.popoverBuilder`.
 * Add `FTimeField.size`.
 
 * **Breaking** Rename `FTimeFieldStyle.fieldStyle` to `FTimeFieldStyle.fieldStyles`. Type changed from
   `FTextFieldStyle` to `FTextFieldSizeStyles`.
+* **Breaking** Remove `FTimeField.defaultFieldBuilder`. Use `FTextField.defaultBuilder` instead.
+* **Breaking** Remove `FTimeField.defaultPopoverBuilder`. Use `FPopover.defaultPopoverBuilder` instead.
 
 * Fix `FTimeField.picker` not showing hint text when no initial time is provided.
 * Fix `FTimeField.picker` clear button not resetting controller value to null.
@@ -227,6 +308,14 @@ sizes consistent across each platform.
 ### `FTextField` & `FTextFormField`
 * Add `FTextField.size` and `FTextFormField.size` for `sm`, `md`, and `lg` size variants.
 * Add `FTextFieldSizeStyles` and `FTextFieldSizeVariant`.
+* Add `FTextField.prefixIconBuilder`.
+* Add `FTextField.defaultBuilder`.
+* Add `FTextField.defaultClearable`.
+* Add `FTextField.defaultClearIconBuilder`.
+* Add `FTextField.defaultObscureIconBuilder`.
+* Add `FTextField.defaultContextMenuBuilder`.
+
+* **Breaking** Remove `FTextFormField.defaultErrorBuilder`. Use `FFormFieldProperties.defaultErrorBuilder` instead.
 
 * Fix `FTextField.clearable` clear icon not appearing immediately when text changes while focused.
 * Fix `FTextFormField.onTapOutside` not being used internally.
@@ -254,6 +343,7 @@ sizes consistent across each platform.
 ### `FTile` & `FTileGroup`
 * Add `FTileStyles.primary` resolving via `FItemVariant.primary`.
 * Add `FTile.onDoubleTap`.
+* Add `FTileGroup.intrinsicWidth`.
 * Add `FTileStyle.shape` for clipping standalone tiles.
 * Add `FTileGroupStyle.slideableTiles` for slide-across interaction.
 
@@ -267,12 +357,19 @@ sizes consistent across each platform.
 
 
 ### `FTooltip`
+* Add `FTooltip.useViewPadding`.
+* Add `FTooltip.useViewInsets`.
+* Add `FTooltip.defaultBuilder`.
+
 * **Breaking** Change `FTooltipStyle.decoration` type from `BoxDecoration` to `Decoration`.
 
 
 ### Others
 * Add `Decorations` extension on `Decoration` for extracting common visual properties.
 * Add `FPlatformVariantConstraint` extension type.
+* Add `Sentinels`.
+* Add `FPortal.defaultBuilder`.
+* Add `FFormFieldProperties.defaultValidator`.
 
 * Change default border shape from `RoundedRectangleBorder` to `RoundedSuperellipseBorder`.
 

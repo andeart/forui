@@ -60,13 +60,6 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     );
   }
 
-  static bool _clearable(TextEditingValue _) => false;
-
-  static Widget _popoverBuilder(BuildContext _, FAutocompleteController _, FPopoverController _, Widget content) =>
-      content;
-
-  static Widget _builder(BuildContext _, FAutocompleteStyle _, Set<FTextFieldVariant> _, Widget? child) => child!;
-
   /// Defines how the autocomplete's state is controlled.
   ///
   /// Defaults to [FAutocompleteControl.managed].
@@ -300,6 +293,16 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
   /// {@macro forui.widgets.FPopover.offset}
   final Offset contentOffset;
 
+  /// {@macro forui.foundation.FPortal.useViewPadding}
+  ///
+  /// Defaults to true.
+  final bool contentUseViewPadding;
+
+  /// {@macro forui.foundation.FPortal.useViewInsets}
+  ///
+  /// Defaults to true.
+  final bool contentUseViewInsets;
+
   /// {@macro forui.widgets.FPopover.hideRegion}
   final FPopoverHideRegion contentHideRegion;
 
@@ -411,8 +414,8 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     SpellCheckConfiguration? spellCheckConfiguration,
     FFieldIconBuilder<FAutocompleteStyle>? prefixBuilder,
     FFieldIconBuilder<FAutocompleteStyle>? suffixBuilder,
-    bool Function(TextEditingValue value) clearable = _clearable,
-    FAutocompletePopoverBuilder popoverBuilder = _popoverBuilder,
+    bool Function(TextEditingValue value) clearable = FTextField.defaultClearable,
+    FAutocompletePopoverBuilder popoverBuilder = FPopover.defaultPopoverBuilder,
     FormFieldSetter<String>? onSaved,
     VoidCallback? onReset,
     FormFieldValidator<String>? validator,
@@ -425,11 +428,13 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     FPortalSpacing contentSpacing = const .spacing(4),
     FPortalOverflow contentOverflow = .flip,
     Offset contentOffset = .zero,
+    bool contentUseViewPadding = true,
+    bool contentUseViewInsets = true,
     FPopoverHideRegion contentHideRegion = .excludeChild,
     Object? contentGroupId,
     bool autoHide = true,
     bool? retainFocus,
-    FFieldBuilder<FAutocompleteStyle> builder = _builder,
+    FFieldBuilder<FAutocompleteStyle> builder = FTextField.defaultBuilder,
     bool rightArrowToComplete = false,
     FutureOr<Iterable<String>> Function(String query)? filter,
     FAutoCompleteContentBuilder? contentBuilder,
@@ -516,6 +521,8 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
          contentSpacing: contentSpacing,
          contentOverflow: contentOverflow,
          contentOffset: contentOffset,
+         contentUseViewPadding: contentUseViewPadding,
+         contentUseViewInsets: contentUseViewInsets,
          contentHideRegion: contentHideRegion,
          contentGroupId: contentGroupId,
          autoHide: autoHide,
@@ -592,8 +599,8 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     this.spellCheckConfiguration,
     this.prefixBuilder,
     this.suffixBuilder,
-    this.clearable = _clearable,
-    this.popoverBuilder = _popoverBuilder,
+    this.clearable = FTextField.defaultClearable,
+    this.popoverBuilder = FPopover.defaultPopoverBuilder,
     this.onSaved,
     this.onReset,
     this.validator,
@@ -606,11 +613,13 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
     this.contentSpacing = const .spacing(4),
     this.contentOverflow = .flip,
     this.contentOffset = .zero,
+    this.contentUseViewPadding = true,
+    this.contentUseViewInsets = true,
     this.contentHideRegion = .excludeChild,
     this.contentGroupId,
     this.autoHide = true,
     this.retainFocus,
-    this.builder = _builder,
+    this.builder = FTextField.defaultBuilder,
     this.rightArrowToComplete = false,
     this.contentScrollController,
     this.contentPhysics = const ClampingScrollPhysics(),
@@ -705,6 +714,8 @@ class FAutocomplete extends StatefulWidget with FFormFieldProperties<String> {
       ..add(DiagnosticsProperty('contentSpacing', contentSpacing))
       ..add(ObjectFlagProperty.has('contentOverflow', contentOverflow))
       ..add(DiagnosticsProperty('contentOffset', contentOffset))
+      ..add(FlagProperty('contentUseViewPadding', value: contentUseViewPadding, ifTrue: 'using view padding'))
+      ..add(FlagProperty('contentUseViewInsets', value: contentUseViewInsets, ifTrue: 'using view insets'))
       ..add(EnumProperty('contentHideRegion', contentHideRegion))
       ..add(DiagnosticsProperty('contentGroupId', contentGroupId))
       ..add(ObjectFlagProperty.has('contentOnTapHide', contentOnTapHide))
@@ -930,6 +941,8 @@ class _State extends State<FAutocomplete> with TickerProviderStateMixin {
             childAnchor: widget.fieldAnchor,
             spacing: widget.contentSpacing,
             overflow: widget.contentOverflow,
+            useViewPadding: widget.contentUseViewPadding,
+            useViewInsets: widget.contentUseViewInsets,
             offset: widget.contentOffset,
             hideRegion: widget.contentHideRegion,
             groupId: widget.contentGroupId,

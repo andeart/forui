@@ -24,6 +24,10 @@ class _CalendarDateField extends FDateField implements FDateFieldCalendarPropert
   @override
   final Offset offset;
   @override
+  final bool useViewPadding;
+  @override
+  final bool useViewInsets;
+  @override
   final FPopoverHideRegion hideRegion;
   @override
   final Object? groupId;
@@ -53,12 +57,14 @@ class _CalendarDateField extends FDateField implements FDateFieldCalendarPropert
     this.mouseCursor = .defer,
     this.canRequestFocus = true,
     this.clearable = false,
-    this.popoverBuilder = FDateField._popoverBuilder,
+    this.popoverBuilder = FPopover.defaultPopoverBuilder,
     this.anchor = .topLeft,
     this.fieldAnchor = .bottomLeft,
     this.spacing = const .spacing(4),
     this.overflow = .flip,
     this.offset = .zero,
+    this.useViewPadding = true,
+    this.useViewInsets = true,
     this.hideRegion = .excludeChild,
     this.groupId,
     this.onTapHide,
@@ -276,6 +282,8 @@ class _CalendarPopover extends StatelessWidget {
     spacing: properties.spacing,
     overflow: properties.overflow,
     offset: properties.offset,
+    useViewPadding: properties.useViewPadding,
+    useViewInsets: properties.useViewInsets,
     hideRegion: properties.hideRegion,
     groupId: properties.groupId,
     autofocus: autofocus,

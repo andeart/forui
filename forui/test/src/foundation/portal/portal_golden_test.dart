@@ -337,6 +337,86 @@ void main() {
       await expectLater(find.byType(TestScaffold), matchesGoldenFile('portal/unlinked.png'));
     });
 
+    testWidgets('portal recalculates overflow when scrolled inside repaint boundary', (tester) async {
+      final portalController = OverlayPortalController();
+      final scrollController = autoDispose(ScrollController());
+
+      await tester.pumpWidget(
+        TestScaffold.app(
+          child: ListView(
+            controller: scrollController,
+            children: [
+              const SizedBox(height: 200),
+              FPortal(
+                portalAnchor: .bottomCenter,
+                childAnchor: .topCenter,
+                controller: portalController,
+                portalBuilder: (context, _) =>
+                    const ColoredBox(color: Colors.red, child: SizedBox.square(dimension: 100)),
+                child: const Center(
+                  child: ColoredBox(color: Colors.yellow, child: SizedBox.square(dimension: 50)),
+                ),
+              ),
+              const SizedBox(height: 1000),
+            ],
+          ),
+        ),
+      );
+
+      portalController.show();
+      await tester.pumpAndSettle();
+
+      scrollController.jumpTo(150);
+      await tester.pump(const Duration(milliseconds: 1));
+      await tester.pump(const Duration(milliseconds: 1));
+
+      await expectLater(
+        find.byType(TestScaffold),
+        matchesGoldenFile('portal/scroll-recalculates-inside-repaint-boundary.png'),
+      );
+    });
+
+    testWidgets('portal recalculates overflow when scrolled outside repaint boundary', (tester) async {
+      final portalController = OverlayPortalController();
+      final scrollController = autoDispose(ScrollController());
+
+      await tester.pumpWidget(
+        TestScaffold.app(
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              children: [
+                const SizedBox(height: 200),
+                FPortal(
+                  portalAnchor: .bottomCenter,
+                  childAnchor: .topCenter,
+                  controller: portalController,
+                  portalBuilder: (context, _) =>
+                      const ColoredBox(color: Colors.red, child: SizedBox.square(dimension: 100)),
+                  child: const Center(
+                    child: ColoredBox(color: Colors.yellow, child: SizedBox.square(dimension: 50)),
+                  ),
+                ),
+                const SizedBox(height: 1000),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      portalController.show();
+      await tester.pumpAndSettle();
+
+      scrollController.jumpTo(150);
+      await tester.pump(const Duration(milliseconds: 1));
+      await tester.pump(const Duration(milliseconds: 1));
+
+      await expectLater(
+        find.byType(TestScaffold),
+        matchesGoldenFile('portal/scroll-recalculates-outside-repaint-boundary.png'),
+      );
+    });
+
     testWidgets('portal repositions when child expanded', (tester) async {
       final controller = OverlayPortalController();
 
@@ -361,21 +441,22 @@ void main() {
     });
   });
 
-  group('viewInsets', () {
-    testWidgets('view padding', (tester) async {
+  group('paddings & insets', () {
+    testWidgets('view padding only', (tester) async {
       final controller = OverlayPortalController();
 
       await tester.pumpWidget(
         TestScaffold.app(
           child: Builder(
             builder: (context) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(viewPadding: const .all(100)),
+              data: MediaQuery.of(context).copyWith(viewPadding: const .all(100), viewInsets: const .all(200)),
               child: Align(
                 alignment: .bottomRight,
                 child: FPortal(
                   portalAnchor: .topLeft,
                   childAnchor: .bottomRight,
                   controller: controller,
+                  useViewInsets: false,
                   portalBuilder: (context, _) =>
                       const ColoredBox(color: Colors.red, child: SizedBox.square(dimension: 100)),
                   child: const ColoredBox(color: Colors.yellow, child: SizedBox.square(dimension: 50)),
@@ -392,21 +473,21 @@ void main() {
       await expectLater(find.byType(TestScaffold), matchesGoldenFile('portal/view-padding.png'));
     });
 
-    testWidgets('view insets', (tester) async {
+    testWidgets('view insets only', (tester) async {
       final controller = OverlayPortalController();
 
       await tester.pumpWidget(
         TestScaffold.app(
           child: Builder(
             builder: (context) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(viewPadding: const .all(100)),
+              data: MediaQuery.of(context).copyWith(viewPadding: const .all(200), viewInsets: const .all(100)),
               child: Align(
                 alignment: .bottomRight,
                 child: FPortal(
                   portalAnchor: .topLeft,
                   childAnchor: .bottomRight,
                   controller: controller,
-                  viewInsets: const .all(50),
+                  useViewPadding: false,
                   portalBuilder: (context, _) =>
                       const ColoredBox(color: Colors.red, child: SizedBox.square(dimension: 100)),
                   child: const ColoredBox(color: Colors.yellow, child: SizedBox.square(dimension: 50)),
@@ -423,21 +504,23 @@ void main() {
       await expectLater(find.byType(TestScaffold), matchesGoldenFile('portal/view-insets.png'));
     });
 
-    testWidgets('no view insets', (tester) async {
+    testWidgets('custom padding', (tester) async {
       final controller = OverlayPortalController();
 
       await tester.pumpWidget(
         TestScaffold.app(
           child: Builder(
             builder: (context) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(viewPadding: const .all(100)),
+              data: MediaQuery.of(context).copyWith(viewPadding: const .all(200), viewInsets: const .all(200)),
               child: Align(
                 alignment: .bottomRight,
                 child: FPortal(
                   portalAnchor: .topLeft,
                   childAnchor: .bottomRight,
                   controller: controller,
-                  viewInsets: .zero,
+                  padding: const .all(50),
+                  useViewPadding: false,
+                  useViewInsets: false,
                   portalBuilder: (context, _) =>
                       const ColoredBox(color: Colors.red, child: SizedBox.square(dimension: 100)),
                   child: const ColoredBox(color: Colors.yellow, child: SizedBox.square(dimension: 50)),
@@ -451,7 +534,39 @@ void main() {
       controller.show();
       await tester.pumpAndSettle();
 
-      await expectLater(find.byType(TestScaffold), matchesGoldenFile('portal/no-view-insets.png'));
+      await expectLater(find.byType(TestScaffold), matchesGoldenFile('portal/custom-padding.png'));
+    });
+
+    testWidgets('no padding', (tester) async {
+      final controller = OverlayPortalController();
+
+      await tester.pumpWidget(
+        TestScaffold.app(
+          child: Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(viewPadding: const .all(100), viewInsets: const .all(100)),
+              child: Align(
+                alignment: .bottomRight,
+                child: FPortal(
+                  portalAnchor: .topLeft,
+                  childAnchor: .bottomRight,
+                  controller: controller,
+                  useViewPadding: false,
+                  useViewInsets: false,
+                  portalBuilder: (context, _) =>
+                      const ColoredBox(color: Colors.red, child: SizedBox.square(dimension: 100)),
+                  child: const ColoredBox(color: Colors.yellow, child: SizedBox.square(dimension: 50)),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      controller.show();
+      await tester.pumpAndSettle();
+
+      await expectLater(find.byType(TestScaffold), matchesGoldenFile('portal/no-padding.png'));
     });
   });
 }

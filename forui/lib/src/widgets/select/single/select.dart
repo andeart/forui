@@ -59,13 +59,6 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     );
   }
 
-  static Widget _fieldBuilder(BuildContext _, FSelectStyle _, Set<FTextFieldVariant> _, Widget child) => child;
-
-  static Widget _popoverBuilder(BuildContext _, FSelectController<Object?> _, FPopoverController _, Widget content) =>
-      content;
-
-  static String? _validator(Object? _) => null;
-
   /// The control that manages the select's state.
   ///
   /// Defaults to [FSelectControl.managed] if not provided.
@@ -190,6 +183,16 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
   /// {@macro forui.widgets.FPopover.overflow}
   final FPortalOverflow contentOverflow;
 
+  /// {@macro forui.foundation.FPortal.useViewPadding}
+  ///
+  /// Defaults to true.
+  final bool contentUseViewPadding;
+
+  /// {@macro forui.foundation.FPortal.useViewInsets}
+  ///
+  /// Defaults to true.
+  final bool contentUseViewInsets;
+
   /// {@macro forui.widgets.FPopover.offset}
   final Offset contentOffset;
 
@@ -232,7 +235,7 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     FSelectStyleDelta style = const .context(),
     bool autofocus = false,
     FocusNode? focusNode,
-    FFieldBuilder<FSelectStyle> builder = _fieldBuilder,
+    FFieldBuilder<FSelectStyle> builder = FTextField.defaultBuilder,
     FFieldIconBuilder<FTextFieldStyle>? prefixBuilder,
     FFieldIconBuilder<FTextFieldStyle>? suffixBuilder = defaultIconBuilder,
     Widget? label,
@@ -242,7 +245,7 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     VoidCallback? onReset,
     AutovalidateMode autovalidateMode = .onUnfocus,
     String? forceErrorText,
-    FormFieldValidator<T> validator = _validator,
+    FormFieldValidator<T> validator = FFormFieldProperties.defaultValidator,
     Widget Function(BuildContext context, String message) errorBuilder = FFormFieldProperties.defaultErrorBuilder,
     String? hint,
     TextAlign textAlign = .start,
@@ -252,12 +255,14 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     MouseCursor mouseCursor = .defer,
     bool canRequestFocus = true,
     bool clearable = false,
-    FSelectPopoverBuilder<T> popoverBuilder = _popoverBuilder,
+    FSelectPopoverBuilder<T> popoverBuilder = FPopover.defaultPopoverBuilder,
     AlignmentGeometry contentAnchor = .topStart,
     AlignmentGeometry fieldAnchor = .bottomStart,
     FPortalConstraints contentConstraints = const FAutoWidthPortalConstraints(maxHeight: 300),
     FPortalSpacing contentSpacing = const .spacing(4),
     FPortalOverflow contentOverflow = .flip,
+    bool contentUseViewPadding = true,
+    bool contentUseViewInsets = true,
     Offset contentOffset = .zero,
     FPopoverHideRegion contentHideRegion = .excludeChild,
     Object? contentGroupId,
@@ -304,6 +309,8 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
       contentConstraints: contentConstraints,
       contentSpacing: contentSpacing,
       contentOverflow: contentOverflow,
+      contentUseViewPadding: contentUseViewPadding,
+      contentUseViewInsets: contentUseViewInsets,
       contentOffset: contentOffset,
       contentHideRegion: contentHideRegion,
       contentGroupId: contentGroupId,
@@ -354,6 +361,8 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     FPortalConstraints contentConstraints,
     FPortalSpacing contentSpacing,
     FPortalOverflow contentOverflow,
+    bool contentUseViewPadding,
+    bool contentUseViewInsets,
     Offset contentOffset,
     FPopoverHideRegion contentHideRegion,
     Object? contentGroupId,
@@ -394,7 +403,7 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     FSelectStyleDelta style = const .context(),
     bool autofocus = false,
     FocusNode? focusNode,
-    FFieldBuilder<FSelectStyle> builder = _fieldBuilder,
+    FFieldBuilder<FSelectStyle> builder = FTextField.defaultBuilder,
     FFieldIconBuilder<FTextFieldStyle>? prefixBuilder,
     FFieldIconBuilder<FTextFieldStyle>? suffixBuilder = defaultIconBuilder,
     Widget? label,
@@ -404,7 +413,7 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     VoidCallback? onReset,
     AutovalidateMode autovalidateMode = .onUnfocus,
     String? forceErrorText,
-    FormFieldValidator<T> validator = _validator,
+    FormFieldValidator<T> validator = FFormFieldProperties.defaultValidator,
     Widget Function(BuildContext context, String message) errorBuilder = FFormFieldProperties.defaultErrorBuilder,
     String? hint,
     TextAlign textAlign = .start,
@@ -414,12 +423,14 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     MouseCursor mouseCursor = .defer,
     bool canRequestFocus = true,
     bool clearable = false,
-    FSelectPopoverBuilder<T> popoverBuilder = _popoverBuilder,
+    FSelectPopoverBuilder<T> popoverBuilder = FPopover.defaultPopoverBuilder,
     AlignmentGeometry contentAnchor = .topStart,
     AlignmentGeometry fieldAnchor = .bottomStart,
     FPortalConstraints contentConstraints = const FAutoWidthPortalConstraints(maxHeight: 300),
     FPortalSpacing contentSpacing = const .spacing(4),
     FPortalOverflow contentOverflow = .flip,
+    bool contentUseViewPadding = true,
+    bool contentUseViewInsets = true,
     Offset contentOffset = .zero,
     FPopoverHideRegion contentHideRegion = .excludeChild,
     Object? contentGroupId,
@@ -478,6 +489,8 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
       contentConstraints: contentConstraints,
       contentSpacing: contentSpacing,
       contentOverflow: contentOverflow,
+      contentUseViewPadding: contentUseViewPadding,
+      contentUseViewInsets: contentUseViewInsets,
       contentOffset: contentOffset,
       contentHideRegion: contentHideRegion,
       contentGroupId: contentGroupId,
@@ -539,6 +552,8 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     FPortalConstraints contentConstraints,
     FPortalSpacing contentSpacing,
     FPortalOverflow contentOverflow,
+    bool contentUseViewPadding,
+    bool contentUseViewInsets,
     Offset contentOffset,
     FPopoverHideRegion contentHideRegion,
     Object? contentGroupId,
@@ -559,7 +574,7 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     this.style = const .context(),
     this.autofocus = false,
     this.focusNode,
-    this.builder = _fieldBuilder,
+    this.builder = FTextField.defaultBuilder,
     this.prefixBuilder,
     this.suffixBuilder = defaultIconBuilder,
     this.label,
@@ -569,7 +584,7 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     this.onReset,
     this.autovalidateMode = .onUnfocus,
     this.forceErrorText,
-    this.validator = _validator,
+    this.validator = FFormFieldProperties.defaultValidator,
     this.errorBuilder = FFormFieldProperties.defaultErrorBuilder,
     this.hint,
     this.textAlign = .start,
@@ -579,12 +594,14 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
     this.mouseCursor = .defer,
     this.canRequestFocus = true,
     this.clearable = false,
-    this.popoverBuilder = _popoverBuilder,
+    this.popoverBuilder = FPopover.defaultPopoverBuilder,
     this.contentAnchor = .topStart,
     this.fieldAnchor = .bottomStart,
     this.contentConstraints = const FAutoWidthPortalConstraints(maxHeight: 300),
     this.contentSpacing = const .spacing(4),
     this.contentOverflow = .flip,
+    this.contentUseViewPadding = true,
+    this.contentUseViewInsets = true,
     this.contentOffset = .zero,
     this.contentHideRegion = .excludeChild,
     this.contentGroupId,
@@ -632,6 +649,8 @@ abstract class FSelect<T> extends StatefulWidget with FFormFieldProperties<T> {
       ..add(DiagnosticsProperty('contentConstraints', contentConstraints))
       ..add(DiagnosticsProperty('contentSpacing', contentSpacing))
       ..add(ObjectFlagProperty.has('contentOverflow', contentOverflow))
+      ..add(FlagProperty('contentUseViewPadding', value: contentUseViewPadding, ifTrue: 'using view padding'))
+      ..add(FlagProperty('contentUseViewInsets', value: contentUseViewInsets, ifTrue: 'using view insets'))
       ..add(DiagnosticsProperty('contentOffset', contentOffset))
       ..add(EnumProperty('contentHideRegion', contentHideRegion))
       ..add(DiagnosticsProperty('contentGroupId', contentGroupId))
@@ -771,6 +790,8 @@ abstract class _State<S extends FSelect<T>, T> extends State<S> with TickerProvi
           childAnchor: widget.fieldAnchor,
           spacing: widget.contentSpacing,
           overflow: widget.contentOverflow,
+          useViewPadding: widget.contentUseViewPadding,
+          useViewInsets: widget.contentUseViewInsets,
           offset: widget.contentOffset,
           hideRegion: widget.contentHideRegion,
           groupId: widget.contentGroupId,
@@ -794,7 +815,7 @@ abstract class _State<S extends FSelect<T>, T> extends State<S> with TickerProvi
                 content(
                   context,
                   style,
-                  autofocusFirst: _controller.value == null,
+                  autofocusFirst: _controller.value == null && context.platformVariant.desktop,
                   autofocus: (value) => _controller.value == value,
                 ),
               ),

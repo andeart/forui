@@ -18,19 +18,19 @@ part 'popover_menu.design.dart';
 /// * [FPopoverMenuStyle] for customizing a popover menu's appearance.
 /// * [FTileGroup] for customizing the items in the menu.
 class FPopoverMenu extends StatelessWidget {
-  static List<FItemGroupMixin> _defaultItemBuilder(
+  /// The default item menu builder that returns the menu as-is.
+  static List<FItemGroupMixin> defaultItemBuilder(
     BuildContext context,
     FPopoverController controller,
     List<FItemGroupMixin>? menu,
   ) => menu!;
 
-  static List<FTileGroupMixin> _defaultTileBuilder(
+  /// The default tile menu builder that returns the menu as-is.
+  static List<FTileGroupMixin> defaultTileBuilder(
     BuildContext context,
     FPopoverController controller,
     List<FTileGroupMixin>? menu,
   ) => menu!;
-
-  static Widget _builder(BuildContext _, FPopoverController _, Widget? child) => child!;
 
   /// The popover menu's style.
   ///
@@ -65,6 +65,9 @@ class FPopoverMenu extends StatelessWidget {
 
   /// {@macro forui.widgets.FTileGroup.maxHeight}
   final double maxHeight;
+
+  /// Whether the menu should intrinsically size to the widest child. Defaults to true.
+  final bool intrinsicWidth;
 
   /// {@macro forui.widgets.FTileGroup.dragStartBehavior}
   final DragStartBehavior dragStartBehavior;
@@ -131,6 +134,16 @@ class FPopoverMenu extends StatelessWidget {
   /// The menu's semantic label used by accessibility frameworks.
   final String? semanticsLabel;
 
+  /// {@macro forui.foundation.FPortal.useViewPadding}
+  ///
+  /// Defaults to true.
+  final bool useViewPadding;
+
+  /// {@macro forui.foundation.FPortal.useViewInsets}
+  ///
+  /// Defaults to true.
+  final bool useViewInsets;
+
   /// {@macro forui.widgets.FPopover.builder}
   final ValueWidgetBuilder<FPopoverController> builder;
 
@@ -162,6 +175,7 @@ class FPopoverMenu extends StatelessWidget {
     this.style = const .context(),
     this.cacheExtent,
     this.maxHeight = .infinity,
+    this.intrinsicWidth = true,
     this.dragStartBehavior = .start,
     this.divider = .full,
     this.menuAnchor = .topCenter,
@@ -179,25 +193,29 @@ class FPopoverMenu extends StatelessWidget {
     this.focusNode,
     this.onFocusChange,
     this.traversalEdgeBehavior,
+    this.useViewPadding = true,
+    this.useViewInsets = true,
     List<FItemGroupMixin> Function(BuildContext context, FPopoverController controller, List<FItemGroupMixin>? menu)
         menuBuilder =
-        _defaultItemBuilder,
+        defaultItemBuilder,
     List<FItemGroupMixin>? menu,
-    this.builder = _builder,
+    this.builder = FPopover.defaultBuilder,
     this.child,
     super.key,
   }) : _menuBuilder = ((context, controller, style) => FItemGroup.merge(
          scrollController: scrollController,
          cacheExtent: cacheExtent,
          maxHeight: maxHeight,
+         intrinsicWidth: intrinsicWidth,
          dragStartBehavior: dragStartBehavior,
          semanticsLabel: semanticsLabel,
          style: style.itemGroupStyle,
          divider: divider,
+
          children: menuBuilder(context, controller, menu),
        )),
-       assert(builder != _builder || child != null, 'Either builder or child must be provided'),
-       assert(menuBuilder != _defaultTileBuilder || menu != null, 'Either menuBuilder or menu must be provided');
+       assert(builder != FPopover.defaultBuilder || child != null, 'Either builder or child must be provided'),
+       assert(menuBuilder != defaultItemBuilder || menu != null, 'Either menuBuilder or menu must be provided');
 
   /// Creates a menu of [FTile]s that is only shown when toggled.
   ///
@@ -220,6 +238,7 @@ class FPopoverMenu extends StatelessWidget {
     this.style = const .context(),
     this.cacheExtent,
     this.maxHeight = .infinity,
+    this.intrinsicWidth = true,
     this.dragStartBehavior = .start,
     this.divider = .full,
     this.menuAnchor = .topCenter,
@@ -237,25 +256,28 @@ class FPopoverMenu extends StatelessWidget {
     this.focusNode,
     this.onFocusChange,
     this.traversalEdgeBehavior,
+    this.useViewPadding = true,
+    this.useViewInsets = true,
     List<FTileGroupMixin> Function(BuildContext context, FPopoverController controller, List<FTileGroupMixin>? menu)
         menuBuilder =
-        _defaultTileBuilder,
+        defaultTileBuilder,
     List<FTileGroupMixin>? menu,
-    this.builder = _builder,
+    this.builder = FPopover.defaultBuilder,
     this.child,
     super.key,
   }) : _menuBuilder = ((context, controller, style) => FTileGroup.merge(
          scrollController: scrollController,
          cacheExtent: cacheExtent,
          maxHeight: maxHeight,
+         intrinsicWidth: intrinsicWidth,
          dragStartBehavior: dragStartBehavior,
          semanticsLabel: semanticsLabel,
          style: style.tileGroupStyle,
          divider: divider,
          children: menuBuilder(context, controller, menu),
        )),
-       assert(builder != _builder || child != null, 'Either builder or child must be provided'),
-       assert(menuBuilder != _defaultTileBuilder || menu != null, 'Either menuBuilder or menu must be provided');
+       assert(builder != FPopover.defaultBuilder || child != null, 'Either builder or child must be provided'),
+       assert(menuBuilder != defaultTileBuilder || menu != null, 'Either menuBuilder or menu must be provided');
 
   @override
   Widget build(BuildContext context) {
@@ -278,6 +300,8 @@ class FPopoverMenu extends StatelessWidget {
       traversalEdgeBehavior: traversalEdgeBehavior,
       barrierSemanticsLabel: barrierSemanticsLabel,
       barrierSemanticsDismissible: barrierSemanticsDismissible,
+      useViewPadding: useViewPadding,
+      useViewInsets: useViewInsets,
       popoverBuilder: (context, controller) => FInheritedItemData(child: _menuBuilder(context, controller, style)),
       builder: builder,
       child: child,
@@ -293,6 +317,7 @@ class FPopoverMenu extends StatelessWidget {
       ..add(DiagnosticsProperty('style', style))
       ..add(DoubleProperty('cacheExtent', cacheExtent))
       ..add(DoubleProperty('maxHeight', maxHeight))
+      ..add(FlagProperty('intrinsicWidth', value: intrinsicWidth, ifTrue: 'intrinsicWidth'))
       ..add(EnumProperty('dragStartBehavior', dragStartBehavior))
       ..add(EnumProperty('divider', divider))
       ..add(DiagnosticsProperty('popoverAnchor', menuAnchor))
@@ -316,6 +341,8 @@ class FPopoverMenu extends StatelessWidget {
       ..add(DiagnosticsProperty('focusNode', focusNode))
       ..add(ObjectFlagProperty.has('onFocusChange', onFocusChange))
       ..add(EnumProperty('traversalEdgeBehavior', traversalEdgeBehavior))
+      ..add(FlagProperty('useViewPadding', value: useViewPadding, ifTrue: 'using view padding'))
+      ..add(FlagProperty('useViewInsets', value: useViewInsets, ifTrue: 'using view insets'))
       ..add(ObjectFlagProperty.has('menuBuilder', _menuBuilder))
       ..add(ObjectFlagProperty.has('builder', builder));
   }
@@ -346,7 +373,7 @@ class FPopoverMenuStyle extends FPopoverStyle with _$FPopoverMenuStyleFunctions 
     this.maxWidth = 250,
     super.barrierFilter,
     super.backgroundFilter,
-    super.viewInsets,
+    super.popoverPadding,
   }) : assert(0 < maxWidth, 'maxWidth ($maxWidth) must be > 0');
 
   /// Creates a [FPopoverMenuStyle] that inherits its properties.
@@ -375,20 +402,21 @@ class FPopoverMenuStyle extends FPopoverStyle with _$FPopoverMenuStyleFunctions 
                  prefix: colors.foreground,
                  foreground: colors.foreground,
                  mutedForeground: colors.mutedForeground,
-                 padding: FItemStyle.menuInsets(touch: touch).$1,
+                 suffixedPadding: FItemStyle.menuInsets(touch: touch).suffixedPadding,
+                 unsuffixedPadding: FItemStyle.menuInsets(touch: touch).unsuffixedPadding,
                ),
                rawItemContentStyle: FRawItemContentStyle.inherit(
                  colors: colors,
                  typography: typography,
                  prefix: colors.foreground,
                  color: colors.foreground,
-                 padding: FItemStyle.menuInsets(touch: touch).$1,
+                 padding: FItemStyle.menuInsets(touch: touch).unsuffixedPadding,
                ),
              ),
            ),
          ]),
        ),
-       tileGroupStyle = .inherit(colors: colors, style: style, typography: typography, touch: touch).copyWith(
+       tileGroupStyle = .inherit(colors: colors, style: style, typography: typography).copyWith(
          tileStyles: .delta([
            .base(
              .delta(

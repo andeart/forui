@@ -89,11 +89,6 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     );
   }
 
-  static Widget _popoverBuilder(BuildContext _, FMultiValueNotifier<Object?> _, FPopoverController _, Widget content) =>
-      content;
-
-  static String? _defaultValidator(Object? _) => null;
-
   /// The control that manages the multi-select's state.
   ///
   /// Defaults to [FMultiValueControl.managed] if not provided.
@@ -210,6 +205,16 @@ abstract class FMultiSelect<T> extends StatefulWidget {
   /// {@macro forui.widgets.FPopover.overflow}
   final FPortalOverflow contentOverflow;
 
+  /// {@macro forui.foundation.FPortal.useViewPadding}
+  ///
+  /// Defaults to true.
+  final bool contentUseViewPadding;
+
+  /// {@macro forui.foundation.FPortal.useViewInsets}
+  ///
+  /// Defaults to true.
+  final bool contentUseViewInsets;
+
   /// {@macro forui.widgets.FPopover.offset}
   final Offset contentOffset;
 
@@ -258,7 +263,7 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     VoidCallback? onReset,
     AutovalidateMode autovalidateMode = .onUnfocus,
     String? forceErrorText,
-    String? Function(Set<T> values) validator = _defaultValidator,
+    String? Function(Set<T> values) validator = FFormFieldProperties.defaultValidator,
     Widget Function(BuildContext context, String message) errorBuilder = FFormFieldProperties.defaultErrorBuilder,
     Widget? hint,
     bool keepHint = true,
@@ -267,13 +272,15 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     TextAlign textAlign = .start,
     TextDirection? textDirection,
     bool clearable = false,
-    FMultiSelectPopoverBuilder<T> popoverBuilder = _popoverBuilder,
+    FMultiSelectPopoverBuilder<T> popoverBuilder = FPopover.defaultPopoverBuilder,
     AlignmentGeometry contentAnchor = .topStart,
     AlignmentGeometry fieldAnchor = .bottomStart,
     FPortalConstraints contentConstraints = const FAutoWidthPortalConstraints(maxHeight: 300),
     FPortalSpacing contentSpacing = const .spacing(4),
     FPortalOverflow contentOverflow = .flip,
-    Offset contentOffset = Offset.zero,
+    bool contentUseViewPadding = true,
+    bool contentUseViewInsets = true,
+    Offset contentOffset = .zero,
     FPopoverHideRegion contentHideRegion = .excludeChild,
     Object? contentGroupId,
     Widget Function(BuildContext context, FMultiSelectStyle style) contentEmptyBuilder =
@@ -317,6 +324,8 @@ abstract class FMultiSelect<T> extends StatefulWidget {
       contentConstraints: contentConstraints,
       contentSpacing: contentSpacing,
       contentOverflow: contentOverflow,
+      contentUseViewPadding: contentUseViewPadding,
+      contentUseViewInsets: contentUseViewInsets,
       contentOffset: contentOffset,
       contentHideRegion: contentHideRegion,
       contentGroupId: contentGroupId,
@@ -364,6 +373,8 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     FPortalConstraints contentConstraints,
     FPortalSpacing contentSpacing,
     FPortalOverflow contentOverflow,
+    bool contentUseViewPadding,
+    bool contentUseViewInsets,
     Offset contentOffset,
     FPopoverHideRegion contentHideRegion,
     Object? contentGroupId,
@@ -412,7 +423,7 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     VoidCallback? onReset,
     AutovalidateMode autovalidateMode = .onUnfocus,
     String? forceErrorText,
-    String? Function(Set<T> values) validator = _defaultValidator,
+    String? Function(Set<T> values) validator = FFormFieldProperties.defaultValidator,
     Widget Function(BuildContext context, String message) errorBuilder = FFormFieldProperties.defaultErrorBuilder,
     Widget? hint,
     bool keepHint = true,
@@ -421,12 +432,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     TextAlign textAlign = .start,
     TextDirection? textDirection,
     bool clearable = false,
-    FMultiSelectPopoverBuilder<T> popoverBuilder = _popoverBuilder,
+    FMultiSelectPopoverBuilder<T> popoverBuilder = FPopover.defaultPopoverBuilder,
     AlignmentGeometry contentAnchor = .topStart,
     AlignmentGeometry fieldAnchor = .bottomStart,
     FPortalConstraints contentConstraints = const FAutoWidthPortalConstraints(maxHeight: 300),
     FPortalSpacing contentSpacing = const .spacing(4),
     FPortalOverflow contentOverflow = .flip,
+    bool contentUseViewPadding = true,
+    bool contentUseViewInsets = true,
     Offset contentOffset = .zero,
     FPopoverHideRegion contentHideRegion = .excludeChild,
     Object? contentGroupId,
@@ -482,6 +495,8 @@ abstract class FMultiSelect<T> extends StatefulWidget {
       contentConstraints: contentConstraints,
       contentSpacing: contentSpacing,
       contentOverflow: contentOverflow,
+      contentUseViewPadding: contentUseViewPadding,
+      contentUseViewInsets: contentUseViewInsets,
       contentOffset: contentOffset,
       contentHideRegion: contentHideRegion,
       contentGroupId: contentGroupId,
@@ -540,6 +555,8 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     FPortalConstraints contentConstraints,
     FPortalSpacing contentSpacing,
     FPortalOverflow contentOverflow,
+    bool contentUseViewPadding,
+    bool contentUseViewInsets,
     Offset contentOffset,
     FPopoverHideRegion contentHideRegion,
     Object? contentGroupId,
@@ -568,7 +585,7 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     this.onReset,
     this.autovalidateMode = .onUnfocus,
     this.forceErrorText,
-    this.validator = _defaultValidator,
+    this.validator = FFormFieldProperties.defaultValidator,
     this.errorBuilder = FFormFieldProperties.defaultErrorBuilder,
     this.hint,
     this.keepHint = true,
@@ -576,12 +593,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     this.textAlign = .start,
     this.textDirection,
     this.clearable = false,
-    this.popoverBuilder = _popoverBuilder,
+    this.popoverBuilder = FPopover.defaultPopoverBuilder,
     this.contentAnchor = .topStart,
     this.fieldAnchor = .bottomStart,
     this.contentConstraints = const FAutoWidthPortalConstraints(maxHeight: 300),
     this.contentSpacing = const .spacing(4),
     this.contentOverflow = .flip,
+    this.contentUseViewPadding = true,
+    this.contentUseViewInsets = true,
     this.contentOffset = .zero,
     this.contentHideRegion = .excludeChild,
     this.contentGroupId,
@@ -626,6 +645,8 @@ abstract class FMultiSelect<T> extends StatefulWidget {
       ..add(DiagnosticsProperty('contentConstraints', contentConstraints))
       ..add(DiagnosticsProperty('contentSpacing', contentSpacing))
       ..add(ObjectFlagProperty.has('contentOverflow', contentOverflow))
+      ..add(FlagProperty('contentUseViewPadding', value: contentUseViewPadding, ifTrue: 'using view padding'))
+      ..add(FlagProperty('contentUseViewInsets', value: contentUseViewInsets, ifTrue: 'using view insets'))
       ..add(DiagnosticsProperty('contentOffset', contentOffset))
       ..add(EnumProperty('contentHideRegion', contentHideRegion))
       ..add(DiagnosticsProperty('contentGroupId', contentGroupId))
@@ -728,6 +749,8 @@ abstract class _FMultiSelectState<S extends FMultiSelect<T>, T> extends State<S>
               childAnchor: widget.fieldAnchor,
               spacing: widget.contentSpacing,
               overflow: widget.contentOverflow,
+              useViewPadding: widget.contentUseViewPadding,
+              useViewInsets: widget.contentUseViewInsets,
               offset: widget.contentOffset,
               hideRegion: widget.contentHideRegion,
               groupId: widget.contentGroupId,
@@ -743,7 +766,7 @@ abstract class _FMultiSelectState<S extends FMultiSelect<T>, T> extends State<S>
                   content(
                     context,
                     style,
-                    autofocusFirst: _controller.value.isEmpty,
+                    autofocusFirst: _controller.value.isEmpty && context.platformVariant.desktop,
                     autofocus: (value) => _controller.value.lastOrNull == value,
                   ),
                 ),

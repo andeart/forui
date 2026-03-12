@@ -54,6 +54,11 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
   /// Throws [AssertionError] if [maxHeight] is not positive.
   final double maxHeight;
 
+  /// {@macro forui.widgets.FItemGroup.intrinsicWidth}
+  ///
+  /// Defaults to false.
+  final bool menuIntrinsicWidth;
+
   /// Determines the way that the menu's drag start behavior is handled. Defaults to [DragStartBehavior.start].
   final DragStartBehavior dragStartBehavior;
 
@@ -107,6 +112,16 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
 
   /// {@macro forui.widgets.FPopover.offset}
   final Offset menuOffset;
+
+  /// {@macro forui.foundation.FPortal.useViewPadding}
+  ///
+  /// Defaults to true.
+  final bool menuUseViewPadding;
+
+  /// {@macro forui.foundation.FPortal.useViewInsets}
+  ///
+  /// Defaults to true.
+  final bool menuUseViewInsets;
 
   /// {@macro forui.widgets.FPopover.hideRegion}
   final FPopoverHideRegion menuHideRegion;
@@ -218,6 +233,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.style = const .context(),
     this.cacheExtent,
     this.maxHeight = .infinity,
+    this.menuIntrinsicWidth = false,
     this.dragStartBehavior = .start,
     this.physics = const ClampingScrollPhysics(),
     this.divider = .full,
@@ -225,6 +241,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.tileAnchor = .bottomRight,
     this.menuSpacing = const .spacing(4),
     this.menuOverflow = .flip,
+    this.menuUseViewPadding = true,
+    this.menuUseViewInsets = true,
     this.menuOffset = .zero,
     this.menuHideRegion = .excludeChild,
     this.menuOnTapHide,
@@ -274,6 +292,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     FSelectMenuTileStyleDelta style = const .context(),
     double? cacheExtent,
     double maxHeight = .infinity,
+    bool menuIntrinsicWidth = false,
     DragStartBehavior dragStartBehavior = .start,
     ScrollPhysics physics = const ClampingScrollPhysics(),
     FItemDivider divider = .full,
@@ -281,6 +300,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     AlignmentGeometry tileAnchor = .bottomRight,
     FPortalSpacing menuSpacing = const .spacing(4),
     FPortalOverflow menuOverflow = .flip,
+    bool menuUseViewPadding = true,
+    bool menuUseViewInsets = true,
     Offset menuOffset = .zero,
     FPopoverHideRegion menuHideRegion = .excludeChild,
     VoidCallback? menuOnTapHide,
@@ -319,6 +340,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     style: style,
     cacheExtent: cacheExtent,
     maxHeight: maxHeight,
+    menuIntrinsicWidth: menuIntrinsicWidth,
     dragStartBehavior: dragStartBehavior,
     physics: physics,
     divider: divider,
@@ -326,6 +348,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     tileAnchor: tileAnchor,
     menuSpacing: menuSpacing,
     menuOverflow: menuOverflow,
+    menuUseViewPadding: menuUseViewPadding,
+    menuUseViewInsets: menuUseViewInsets,
     menuOffset: menuOffset,
     menuHideRegion: menuHideRegion,
     menuOnTapHide: menuOnTapHide,
@@ -384,6 +408,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.style = const .context(),
     this.cacheExtent,
     this.maxHeight = .infinity,
+    this.menuIntrinsicWidth = false,
     this.dragStartBehavior = .start,
     this.physics = const ClampingScrollPhysics(),
     this.divider = .full,
@@ -391,6 +416,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.tileAnchor = .bottomRight,
     this.menuSpacing = const .spacing(4),
     this.menuOverflow = .flip,
+    this.menuUseViewPadding = true,
+    this.menuUseViewInsets = true,
     this.menuOffset = .zero,
     this.menuHideRegion = .excludeChild,
     this.menuOnTapHide,
@@ -437,6 +464,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
       ..add(DiagnosticsProperty('style', style))
       ..add(DoubleProperty('cacheExtent', cacheExtent))
       ..add(DoubleProperty('maxHeight', maxHeight))
+      ..add(FlagProperty('menuIntrinsicWidth', value: menuIntrinsicWidth, ifTrue: 'menuIntrinsicWidth'))
       ..add(EnumProperty('dragStartBehavior', dragStartBehavior))
       ..add(DiagnosticsProperty('physics', physics))
       ..add(EnumProperty('divider', divider))
@@ -444,6 +472,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
       ..add(DiagnosticsProperty('tileAnchor', tileAnchor))
       ..add(DiagnosticsProperty('menuSpacing', menuSpacing))
       ..add(ObjectFlagProperty.has('menuOverflow', menuOverflow))
+      ..add(FlagProperty('menuUseViewPadding', value: menuUseViewPadding, ifTrue: 'using view padding'))
+      ..add(FlagProperty('menuUseViewInsets', value: menuUseViewInsets, ifTrue: 'using view insets'))
       ..add(DiagnosticsProperty('menuOffset', menuOffset))
       ..add(EnumProperty('menuHideRegion', menuHideRegion))
       ..add(ObjectFlagProperty.has('menuOnTapHide', menuOnTapHide))
@@ -557,6 +587,8 @@ class _FSelectMenuTileState<T> extends State<FSelectMenuTile<T>> with TickerProv
           childAnchor: widget.tileAnchor,
           spacing: widget.menuSpacing,
           overflow: widget.menuOverflow,
+          useViewPadding: widget.menuUseViewPadding,
+          useViewInsets: widget.menuUseViewInsets,
           offset: widget.menuOffset,
           hideRegion: widget.menuHideRegion,
           onTapHide: widget.menuOnTapHide,
@@ -575,6 +607,7 @@ class _FSelectMenuTileState<T> extends State<FSelectMenuTile<T>> with TickerProv
                   scrollController: widget.scrollController,
                   cacheExtent: widget.cacheExtent,
                   maxHeight: widget.maxHeight,
+                  intrinsicWidth: widget.menuIntrinsicWidth,
                   dragStartBehavior: widget.dragStartBehavior,
                   physics: widget.physics,
                   style: menuStyle.tileGroupStyle,
@@ -713,7 +746,7 @@ class FSelectMenuTileStyle extends FLabelStyle with _$FSelectMenuTileStyleFuncti
     required FStyle style,
     required bool touch,
   }) {
-    final groupStyle = FTileGroupStyle.inherit(colors: colors, style: style, typography: typography, touch: touch);
+    final groupStyle = FTileGroupStyle.inherit(colors: colors, style: style, typography: typography);
     return .new(
       menuStyle: .inherit(colors: colors, style: style, typography: typography, touch: touch),
       tileStyle: .inherit(colors: colors, typography: typography, style: style),

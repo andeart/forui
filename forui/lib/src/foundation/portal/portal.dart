@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -16,7 +18,8 @@ import 'package:forui/src/foundation/portal/layer.dart';
 /// * [Visualization](http://forui.dev/docs/foundation/portal#visualization) for a visual demonstration of how
 ///   portals work.
 class FPortal extends StatefulWidget {
-  static Widget _builder(BuildContext _, OverlayPortalController _, Widget? child) => child!;
+  /// The default builder that returns the child as-is.
+  static Widget defaultBuilder(BuildContext _, OverlayPortalController _, Widget? child) => child!;
 
   /// The controller.
   final OverlayPortalController? controller;
@@ -62,13 +65,28 @@ class FPortal extends StatefulWidget {
   /// Defaults to [Offset.zero].
   final Offset offset;
 
-  /// The insets of the view. In other words, the minimum distance between the edges of the view and the edges of the
-  /// portal.
+  /// {@template forui.foundation.FPortal.useViewPadding}
+  /// Whether to avoid [MediaQueryData.viewPadding] (static safe areas like the notch and status bar).
+  /// {@endtemplate}
   ///
-  /// Set this to [EdgeInsets.zero] to disable the insets.
+  /// Defaults to true.
+  final bool useViewPadding;
+
+  /// {@template forui.foundation.FPortal.useViewInsets}
+  /// Whether to avoid [MediaQueryData.viewInsets] (the soft keyboard).
+  /// {@endtemplate}
   ///
-  /// Defaults to [MediaQueryData.viewPadding].
-  final EdgeInsetsGeometry? viewInsets;
+  /// Defaults to true.
+  final bool useViewInsets;
+
+  /// {@template forui.foundation.FPortal.padding}
+  /// The additional padding between the edges of the view and the edges of the portal.
+  ///
+  /// This is applied on top of any padding from [useViewPadding] and [useViewInsets].
+  /// {@endtemplate}
+  ///
+  /// Defaults to [EdgeInsets.zero].
+  final EdgeInsetsGeometry padding;
 
   /// An optional barrier widget that is displayed behind the portal.
   final Widget? barrier;
@@ -99,12 +117,14 @@ class FPortal extends StatefulWidget {
     this.spacing = .zero,
     this.overflow = .flip,
     this.offset = .zero,
-    this.viewInsets,
+    this.useViewPadding = true,
+    this.useViewInsets = true,
+    this.padding = .zero,
     this.barrier,
-    this.builder = _builder,
+    this.builder = defaultBuilder,
     this.child,
     super.key,
-  }) : assert(builder != _builder || child != null, 'Either builder or child must be provided');
+  }) : assert(builder != defaultBuilder || child != null, 'Either builder or child must be provided');
 
   @override
   State<FPortal> createState() => _State();
@@ -120,7 +140,9 @@ class FPortal extends StatefulWidget {
       ..add(DiagnosticsProperty('spacing', spacing))
       ..add(ObjectFlagProperty.has('overflow', overflow))
       ..add(DiagnosticsProperty('offset', offset))
-      ..add(DiagnosticsProperty('viewInsets', viewInsets))
+      ..add(FlagProperty('useViewPadding', value: useViewPadding, ifTrue: 'using view padding'))
+      ..add(FlagProperty('useViewInsets', value: useViewInsets, ifTrue: 'using view insets'))
+      ..add(DiagnosticsProperty('padding', padding))
       ..add(ObjectFlagProperty.has('portalBuilder', portalBuilder))
       ..add(ObjectFlagProperty.has('builder', builder));
   }
@@ -146,47 +168,49 @@ class _State extends State<FPortal> {
   }
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      RepaintBoundary(
-        child: CompositedChild(
+  Widget build(BuildContext context) => CompositedChild(
+    notifier: _notifier,
+    link: _link,
+    child: OverlayPortal(
+      controller: _controller,
+      overlayChildBuilder: (context) {
+        final direction = Directionality.maybeOf(context) ?? .ltr;
+        final portalAnchor = widget.portalAnchor.resolve(direction);
+        final childAnchor = widget.childAnchor.resolve(direction);
+
+        final padding = widget.useViewPadding ? MediaQuery.viewPaddingOf(context) : EdgeInsets.zero;
+        final insets = widget.useViewInsets ? MediaQuery.viewInsetsOf(context) : EdgeInsets.zero;
+
+        Widget portal = CompositedPortal(
           notifier: _notifier,
           link: _link,
-          child: OverlayPortal(
-            controller: _controller,
-            overlayChildBuilder: (context) {
-              final direction = Directionality.maybeOf(context) ?? .ltr;
-              final portalAnchor = widget.portalAnchor.resolve(direction);
-              final childAnchor = widget.childAnchor.resolve(direction);
+          constraints: widget.constraints,
+          portalAnchor: portalAnchor,
+          childAnchor: childAnchor,
+          padding:
+              EdgeInsets.only(
+                left: math.max(padding.left, insets.left),
+                top: math.max(padding.top, insets.top),
+                right: math.max(padding.right, insets.right),
+                bottom: math.max(padding.bottom, insets.bottom),
+              ) +
+              widget.padding.resolve(direction),
+          spacing: widget.spacing(childAnchor, portalAnchor),
+          overflow: widget.overflow,
+          offset: widget.offset,
+          child: widget.portalBuilder(context, _controller),
+        );
 
-              Widget portal = CompositedPortal(
-                notifier: _notifier,
-                link: _link,
-                constraints: widget.constraints,
-                portalAnchor: portalAnchor,
-                childAnchor: childAnchor,
-                viewInsets:
-                    widget.viewInsets?.resolve(Directionality.maybeOf(context) ?? .ltr) ??
-                    MediaQuery.viewPaddingOf(context),
-                spacing: widget.spacing(childAnchor, portalAnchor),
-                overflow: widget.overflow,
-                offset: widget.offset,
-                child: widget.portalBuilder(context, _controller),
-              );
+        if (widget.barrier case final barrier?) {
+          portal = Stack(children: [barrier, portal]);
+        }
 
-              if (widget.barrier case final barrier?) {
-                portal = Stack(children: [barrier, portal]);
-              }
-
-              // Prevents the portal from inheriting FTappableGroups in the widget.builder/widget.child since
-              // FTappableGroup does not hit test across layers.
-              return FTappableGroup.isolate(child: portal);
-            },
-            child: RepaintBoundary(child: widget.builder(context, _controller, widget.child)),
-          ),
-        ),
-      ),
-    ],
+        // Prevents the portal from inheriting FTappableGroups in the widget.builder/widget.child since
+        // FTappableGroup does not hit test across layers.
+        return FTappableGroup.isolate(child: portal);
+      },
+      child: RepaintBoundary(child: widget.builder(context, _controller, widget.child)),
+    ),
   );
 
   @override

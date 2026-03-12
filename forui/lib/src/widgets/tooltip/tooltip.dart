@@ -12,7 +12,7 @@ import 'package:forui/src/foundation/annotations.dart';
 import 'package:forui/src/widgets/tooltip/tooltip_controller.dart';
 import 'package:forui/src/widgets/tooltip/tooltip_group.dart';
 
-@Sentinels(FTooltipStyle, {'backgroundFilter': 'imageFilterSentinel'})
+@SentinelValues(FTooltipStyle, {'backgroundFilter': 'Sentinels.imageFilter'})
 part 'tooltip.design.dart';
 
 /// A tooltip displays information related to a widget when focused, hovered over, or long pressed.
@@ -27,7 +27,8 @@ part 'tooltip.design.dart';
 /// * [FTooltipStyle] for customizing a tooltip's appearance.
 /// * [FTooltipGroup] for grouping tooltips together where subsequent tooltips appear instantly after the initial one.
 class FTooltip extends StatefulWidget {
-  static Widget _builder(BuildContext _, FTooltipController _, Widget? child) => child!;
+  /// The default builder that returns the child as-is.
+  static Widget defaultBuilder(BuildContext _, FTooltipController _, Widget? child) => child!;
 
   /// Defines how the tooltip's shown state is controlled.
   ///
@@ -109,6 +110,16 @@ class FTooltip extends StatefulWidget {
   /// Defaults to the enclosing [FTooltipGroup.longPressExitDuration], typically 1500ms.
   final Duration? longPressExitDuration;
 
+  /// {@macro forui.foundation.FPortal.useViewPadding}
+  ///
+  /// Defaults to true.
+  final bool useViewPadding;
+
+  /// {@macro forui.foundation.FPortal.useViewInsets}
+  ///
+  /// Defaults to true.
+  final bool useViewInsets;
+
   /// The tip builder. The child passed to [tipBuilder] will always be null.
   final Widget Function(BuildContext context, FTooltipController controller) tipBuilder;
 
@@ -139,10 +150,12 @@ class FTooltip extends StatefulWidget {
     this.hoverExitDuration,
     this.longPress,
     this.longPressExitDuration,
-    this.builder = _builder,
+    this.useViewPadding = true,
+    this.useViewInsets = true,
+    this.builder = defaultBuilder,
     this.child,
     super.key,
-  }) : assert(builder != _builder || child != null, 'Either builder or child must be provided.');
+  }) : assert(builder != defaultBuilder || child != null, 'Either builder or child must be provided.');
 
   @override
   State<FTooltip> createState() => _FTooltipState();
@@ -162,6 +175,8 @@ class FTooltip extends StatefulWidget {
       ..add(DiagnosticsProperty('hoverExitDuration', hoverExitDuration))
       ..add(FlagProperty('longPress', value: longPress, ifTrue: 'longPress'))
       ..add(DiagnosticsProperty('longPressExitDuration', longPressExitDuration))
+      ..add(FlagProperty('useViewPadding', value: useViewPadding, ifTrue: 'using view padding'))
+      ..add(FlagProperty('useViewInsets', value: useViewInsets, ifTrue: 'using view insets'))
       ..add(ObjectFlagProperty.has('tipBuilder', tipBuilder))
       ..add(ObjectFlagProperty.has('builder', builder));
   }
@@ -262,6 +277,8 @@ class _FTooltipState extends State<FTooltip> with SingleTickerProviderStateMixin
         childAnchor: widget.childAnchor,
         portalAnchor: widget.tipAnchor,
         overflow: widget.overflow,
+        useViewPadding: widget.useViewPadding,
+        useViewInsets: widget.useViewInsets,
         portalBuilder: (context, _) {
           Widget tooltip = Semantics(
             container: true,

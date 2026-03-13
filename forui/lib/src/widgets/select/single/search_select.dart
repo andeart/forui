@@ -51,12 +51,15 @@ class _SearchSelect<T> extends FSelect<T> {
     super.contentOffset,
     super.contentHideRegion,
     super.contentGroupId,
+    super.contentCutout,
+    super.contentCutoutBuilder,
     super.autoHide,
     super.contentEmptyBuilder,
     super.contentScrollController,
     super.contentScrollHandles,
     super.contentPhysics,
     super.contentDivider,
+    super.formFieldKey,
     super.key,
   }) : super._();
 

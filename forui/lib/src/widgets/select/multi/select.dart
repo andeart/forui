@@ -224,6 +224,12 @@ abstract class FMultiSelect<T> extends StatefulWidget {
   /// {@macro forui.widgets.FPopover.groupId}
   final Object? contentGroupId;
 
+  /// {@macro forui.widgets.FPopover.cutout}
+  final bool contentCutout;
+
+  /// {@macro forui.widgets.FPopover.cutoutBuilder}
+  final void Function(Path path, Rect bounds) contentCutoutBuilder;
+
   /// The builder that is called when the select is empty. Defaults to [FSelect.defaultContentEmptyBuilder].
   final Widget Function(BuildContext context, FMultiSelectStyle style) contentEmptyBuilder;
 
@@ -238,6 +244,9 @@ abstract class FMultiSelect<T> extends StatefulWidget {
 
   /// The divider used to separate the content items. Defaults to [FItemDivider.none].
   final FItemDivider contentDivider;
+
+  /// {@macro forui.foundation.doc_templates.formFieldKey}
+  final Key? formFieldKey;
 
   /// Creates a [FMultiSelect] from the given [items].
   ///
@@ -283,12 +292,15 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     Offset contentOffset = .zero,
     FPopoverHideRegion contentHideRegion = .excludeChild,
     Object? contentGroupId,
+    bool contentCutout = true,
+    void Function(Path path, Rect bounds) contentCutoutBuilder = FModalBarrier.defaultCutoutBuilder,
     Widget Function(BuildContext context, FMultiSelectStyle style) contentEmptyBuilder =
         FMultiSelect.defaultContentEmptyBuilder,
     ScrollController? contentScrollController,
     bool contentScrollHandles = false,
     ScrollPhysics contentPhysics = const ClampingScrollPhysics(),
     FItemDivider contentDivider = .none,
+    Key? formFieldKey,
     Key? key,
   }) {
     final inverse = {for (final MapEntry(:key, :value) in items.entries) value: key};
@@ -329,11 +341,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
       contentOffset: contentOffset,
       contentHideRegion: contentHideRegion,
       contentGroupId: contentGroupId,
+      contentCutout: contentCutout,
+      contentCutoutBuilder: contentCutoutBuilder,
       contentEmptyBuilder: contentEmptyBuilder,
       contentScrollController: contentScrollController,
       contentScrollHandles: contentScrollHandles,
       contentPhysics: contentPhysics,
       contentDivider: contentDivider,
+      formFieldKey: formFieldKey,
       key: key,
       children: [for (final MapEntry(:key, :value) in items.entries) .item(title: Text(key), value: value)],
     );
@@ -378,11 +393,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     Offset contentOffset,
     FPopoverHideRegion contentHideRegion,
     Object? contentGroupId,
+    bool contentCutout,
+    void Function(Path path, Rect bounds) contentCutoutBuilder,
     Widget Function(BuildContext context, FMultiSelectStyle style) contentEmptyBuilder,
     ScrollController? contentScrollController,
     bool contentScrollHandles,
     ScrollPhysics contentPhysics,
     FItemDivider contentDivider,
+    Key? formFieldKey,
     Key? key,
   }) = _BasicSelect<T>;
 
@@ -443,11 +461,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     Offset contentOffset = .zero,
     FPopoverHideRegion contentHideRegion = .excludeChild,
     Object? contentGroupId,
+    bool contentCutout = true,
+    void Function(Path path, Rect bounds) contentCutoutBuilder = FModalBarrier.defaultCutoutBuilder,
     Widget Function(BuildContext context, FMultiSelectStyle style) contentEmptyBuilder = defaultContentEmptyBuilder,
     ScrollController? contentScrollController,
     bool contentScrollHandles = false,
     ScrollPhysics contentPhysics = const ClampingScrollPhysics(),
     FItemDivider contentDivider = .none,
+    Key? formFieldKey,
     Key? key,
   }) {
     final inverse = {for (final MapEntry(:key, :value) in items.entries) value: key};
@@ -500,11 +521,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
       contentOffset: contentOffset,
       contentHideRegion: contentHideRegion,
       contentGroupId: contentGroupId,
+      contentCutout: contentCutout,
+      contentCutoutBuilder: contentCutoutBuilder,
       contentEmptyBuilder: contentEmptyBuilder,
       contentScrollController: contentScrollController,
       contentScrollHandles: contentScrollHandles,
       contentPhysics: contentPhysics,
       contentDivider: contentDivider,
+      formFieldKey: formFieldKey,
       key: key,
     );
   }
@@ -560,11 +584,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     Offset contentOffset,
     FPopoverHideRegion contentHideRegion,
     Object? contentGroupId,
+    bool contentCutout,
+    void Function(Path path, Rect bounds) contentCutoutBuilder,
     Widget Function(BuildContext context, FMultiSelectStyle style) contentEmptyBuilder,
     ScrollController? contentScrollController,
     bool contentScrollHandles,
     ScrollPhysics contentPhysics,
     FItemDivider contentDivider,
+    Key? formFieldKey,
     Key? key,
   }) = _SearchSelect<T>;
 
@@ -604,11 +631,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
     this.contentOffset = .zero,
     this.contentHideRegion = .excludeChild,
     this.contentGroupId,
+    this.contentCutout = true,
+    this.contentCutoutBuilder = FModalBarrier.defaultCutoutBuilder,
     this.contentEmptyBuilder = FMultiSelect.defaultContentEmptyBuilder,
     this.contentScrollController,
     this.contentScrollHandles = false,
     this.contentPhysics = const ClampingScrollPhysics(),
     this.contentDivider = .none,
+    this.formFieldKey,
     FMultiSelectTagBuilder<T>? tagBuilder,
     super.key,
   }) : tagBuilder = tagBuilder ?? defaultTagBuilder;
@@ -650,11 +680,14 @@ abstract class FMultiSelect<T> extends StatefulWidget {
       ..add(DiagnosticsProperty('contentOffset', contentOffset))
       ..add(EnumProperty('contentHideRegion', contentHideRegion))
       ..add(DiagnosticsProperty('contentGroupId', contentGroupId))
+      ..add(FlagProperty('contentCutout', value: contentCutout, ifTrue: 'cutout'))
+      ..add(ObjectFlagProperty.has('contentCutoutBuilder', contentCutoutBuilder))
       ..add(ObjectFlagProperty.has('emptyBuilder', contentEmptyBuilder))
       ..add(DiagnosticsProperty('contentScrollController', contentScrollController))
       ..add(FlagProperty('contentScrollHandles', value: contentScrollHandles, ifTrue: 'contentScrollHandles'))
       ..add(DiagnosticsProperty('contentPhysics', contentPhysics))
-      ..add(EnumProperty('contentDivider', contentDivider));
+      ..add(EnumProperty('contentDivider', contentDivider))
+      ..add(DiagnosticsProperty('formFieldKey', formFieldKey));
   }
 }
 
@@ -721,6 +754,7 @@ abstract class _FMultiSelectState<S extends FMultiSelect<T>, T> extends State<S>
     final padding = fieldStyle.contentPadding.resolve(direction);
 
     return MultiValueFormField<T>(
+      key: widget.formFieldKey,
       controller: _controller,
       enabled: widget.enabled,
       autovalidateMode: widget.autovalidateMode,
@@ -754,6 +788,8 @@ abstract class _FMultiSelectState<S extends FMultiSelect<T>, T> extends State<S>
               offset: widget.contentOffset,
               hideRegion: widget.contentHideRegion,
               groupId: widget.contentGroupId,
+              cutout: widget.contentCutout,
+              cutoutBuilder: widget.contentCutoutBuilder,
               shortcuts: {const SingleActivator(.escape): _toggle},
               popoverBuilder: (context, controller) => InheritedSelectController<T>(
                 popover: _popoverController,

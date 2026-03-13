@@ -20,16 +20,22 @@ final selectMenuTile = FSelectMenuTile<String>(
   validator: (values) => null,
   forceErrorText: null,
   autovalidateMode: .disabled,
+  formFieldKey: null,
   // {@endcategory}
   // {@category "Layout"}
   menuAnchor: .topRight,
   tileAnchor: .bottomRight,
   menuSpacing: const .spacing(4),
   menuOverflow: .flip,
+  menuUseViewPadding: true,
+  menuUseViewInsets: true,
   menuOffset: .zero,
   menuHideRegion: .excludeChild,
   menuOnTapHide: null,
   menuGroupId: null,
+  menuCutout: true,
+  menuCutoutBuilder: FModalBarrier.defaultCutoutBuilder,
+  menuIntrinsicWidth: false,
   // {@endcategory}
   // {@category "Scroll"}
   scrollController: null,
@@ -83,16 +89,22 @@ final selectMenuTileBuilder = FSelectMenuTile<String>.builder(
   validator: (values) => null,
   forceErrorText: null,
   autovalidateMode: .disabled,
+  formFieldKey: null,
   // {@endcategory}
   // {@category "Layout"}
   menuAnchor: .topRight,
   tileAnchor: .bottomRight,
   menuSpacing: const .spacing(4),
   menuOverflow: .flip,
+  menuUseViewPadding: true,
+  menuUseViewInsets: true,
   menuOffset: .zero,
   menuHideRegion: .excludeChild,
   menuOnTapHide: null,
   menuGroupId: null,
+  menuCutout: true,
+  menuCutoutBuilder: FModalBarrier.defaultCutoutBuilder,
+  menuIntrinsicWidth: false,
   // {@endcategory}
   // {@category "Scroll"}
   scrollController: null,

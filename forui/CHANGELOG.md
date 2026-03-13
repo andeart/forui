@@ -12,6 +12,8 @@ sizes consistent across each platform.
 
 
 ### `FAutocomplete`
+* Add `FAutocomplete.contentCutout`.
+* Add `FAutocomplete.contentCutoutBuilder`.
 * Add `FAutocomplete.contentUseViewPadding`.
 * Add `FAutocomplete.contentUseViewInsets`.
 * Add `FAutocomplete.retainFocus`.
@@ -46,6 +48,8 @@ sizes consistent across each platform.
 
 
 ### `FBreadcrumb`
+* Add `FBreadcrumbItem.collapsed(cutout: ...)`.
+* Add `FBreadcrumbItem.collapsed(cutoutBuilder: ...)`.
 * Add `FBreadcrumbItem.collapsed(intrinsicWidth: ...)`.
 
 
@@ -97,6 +101,10 @@ sizes consistent across each platform.
 
 
 ### `FDateField`
+* Add `FDateField.formFieldKey`.
+* Add `FDateFieldCalendarProperties.cutout`.
+* Add `FDateFieldCalendarProperties.cutoutBuilder`.
+* Add `FDateFieldCalendarProperties.popoverBuilder`.
 * Add `FDateFieldCalendarProperties.useViewPadding`.
 * Add `FDateFieldCalendarProperties.useViewInsets`.
 * Add `FDateField.popoverBuilder`.
@@ -143,6 +151,7 @@ sizes consistent across each platform.
 
 * Fix `FItemDivider.indented` not masking the gap area with the item's background color.
 * Fix `FItem` not being clipped to its shape.
+* Fix `FItem` long press triggering an empty callback instead of falling back to `onPress` when `onLongPress` is null.
 
 
 ### `FLineCalendar`
@@ -152,12 +161,24 @@ sizes consistent across each platform.
   `FVariants<..., Decoration, DecorationDelta>`.
 
 
+### `FModalBarrier` & `FAnimatedModalBarrier`
+* Add `FModalBarrier.defaultCutoutBuilder`.
+* Add `FModalBarrier.cutout`.
+* Add `FModalBarrier.cutoutBuilder`.
+* Add `FAnimatedModalBarrier.cutout`.
+* Add `FAnimatedModalBarrier.cutoutBuilder`.
+
+* Fix `FModalBarrier` incorrectly excluding semantics when barrier is dismissible.
+
+
 ### `FPagination`
 * **Breaking** Change `FPaginationStyle.itemDecoration` type from `FVariants<..., BoxDecoration, BoxDecorationDelta>`
   to `FVariants<..., Decoration, DecorationDelta>`.
 
 
 ### `FPopover`
+* Add `FPopover.cutout`.
+* Add `FPopover.cutoutBuilder`.
 * Add `FPopover.useViewPadding`.
 * Add `FPopover.useViewInsets`.
 * Add `FPopover.defaultBuilder`.
@@ -168,6 +189,8 @@ sizes consistent across each platform.
 
 
 ### `FPopoverMenu`
+* Add `FPopoverMenu.cutout`.
+* Add `FPopoverMenu.cutoutBuilder`.
 * Add `FPopoverMenu.intrinsicWidth`.
 * Add `FPopoverMenu.useViewPadding`.
 * Add `FPopoverMenu.useViewInsets`.
@@ -184,6 +207,7 @@ sizes consistent across each platform.
 * Add `FPortal.useViewInsets`.
 * Add `FPortal.padding`.
 
+* **Breaking** Change `FPortal.barrier` type from `Widget?` to `Widget Function(RenderBox? cutout)?`.
 * **Breaking** Remove `FPortal.viewInsets`. Use `FPortal.useViewPadding`, `FPortal.useViewInsets`, and `FPortal.padding`
   instead.
 
@@ -206,8 +230,14 @@ sizes consistent across each platform.
 
 
 ### `FSelect` & `FMultiSelect`
+* Add `FSelect.formFieldKey`.
+* Add `FMultiSelect.formFieldKey`.
+* Add `FSelect.contentCutout`.
+* Add `FSelect.contentCutoutBuilder`.
 * Add `FSelect.contentUseViewPadding`.
 * Add `FSelect.contentUseViewInsets`.
+* Add `FMultiSelect.contentCutout`.
+* Add `FMultiSelect.contentCutoutBuilder`.
 * Add `FMultiSelect.contentUseViewPadding`.
 * Add `FMultiSelect.contentUseViewInsets`.
 * Add `FSelect.popoverBuilder`.
@@ -254,7 +284,12 @@ sizes consistent across each platform.
 * **Breaking** Change `FSidebarStyle.decoration` type from `BoxDecoration` to `Decoration`.
 
 
+### `FSelectGroup`
+* Add `FSelectGroup.formFieldKey`.
+
+
 ### `FSlider`
+* Add `FSlider.formFieldKey`.
 * Add `FSlider.defaultTooltipBuilder`.
 * Add `FSlider.defaultSemanticValueFormatter`.
 
@@ -280,16 +315,24 @@ sizes consistent across each platform.
 
 
 ### `FSelectMenuTile`
+* Add `FSelectMenuTile.formFieldKey`.
+* Add `FSelectMenuTile.menuCutout`.
+* Add `FSelectMenuTile.menuCutoutBuilder`.
 * Add `FSelectMenuTile.menuIntrinsicWidth`.
 * Add `FSelectMenuTile.menuUseViewPadding`.
 * Add `FSelectMenuTile.menuUseViewInsets`.
 
 
 ### `FSelectTileGroup`
+* Add `FSelectTileGroup.formFieldKey`.
 * Add `FSelectTileGroup.intrinsicWidth`.
 
 
 ### `FTimeField`
+* Add `FTimeField.formFieldKey`.
+* Add `FTimeFieldPickerProperties.cutout`.
+* Add `FTimeFieldPickerProperties.cutoutBuilder`.
+* Add `FTimeFieldPickerProperties.popoverBuilder`.
 * Add `FTimeFieldPickerProperties.useViewPadding`.
 * Add `FTimeFieldPickerProperties.useViewInsets`.
 * Add `FTimeField.clearable`.
@@ -306,6 +349,7 @@ sizes consistent across each platform.
 
 
 ### `FTextField` & `FTextFormField`
+* Add `FTextFormField.formFieldKey`.
 * Add `FTextField.size` and `FTextFormField.size` for `sm`, `md`, and `lg` size variants.
 * Add `FTextFieldSizeStyles` and `FTextFieldSizeVariant`.
 * Add `FTextField.prefixIconBuilder`.
@@ -317,6 +361,7 @@ sizes consistent across each platform.
 
 * **Breaking** Remove `FTextFormField.defaultErrorBuilder`. Use `FFormFieldProperties.defaultErrorBuilder` instead.
 
+* Fix `FTextFormField` incorrectly forwarding `key` to inner `Input` widget, causing `GlobalKey` collisions.
 * Fix `FTextField.clearable` clear icon not appearing immediately when text changes while focused.
 * Fix `FTextFormField.onTapOutside` not being used internally.
 
@@ -348,6 +393,8 @@ sizes consistent across each platform.
 * Add `FTileGroupStyle.slideableTiles` for slide-across interaction.
 
 * **Breaking** Change `FTileGroupStyle.decoration` type from `BoxDecoration` to `Decoration`.
+
+* Fix `FTile` long press triggering an empty callback instead of falling back to `onPress` when `onLongPress` is null.
 
 
 ### `FToast`

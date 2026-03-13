@@ -33,10 +33,15 @@ class _PickerTimeField extends FTimeField implements FTimeFieldPickerProperties 
   @override
   final VoidCallback? onTapHide;
   @override
+  final bool cutout;
+  @override
+  final void Function(Path path, Rect bounds) cutoutBuilder;
+  @override
+  final FTimeFieldPopoverBuilder popoverBuilder;
+  @override
   final int hourInterval;
   @override
   final int minuteInterval;
-  final FTimeFieldPopoverBuilder popoverBuilder;
 
   const _PickerTimeField({
     this.format,
@@ -58,9 +63,11 @@ class _PickerTimeField extends FTimeField implements FTimeFieldPickerProperties 
     this.hideRegion = .excludeChild,
     this.groupId,
     this.onTapHide,
+    this.cutout = true,
+    this.cutoutBuilder = FModalBarrier.defaultCutoutBuilder,
+    this.popoverBuilder = FPopover.defaultPopoverBuilder,
     this.hourInterval = 1,
     this.minuteInterval = 1,
-    this.popoverBuilder = FPopover.defaultPopoverBuilder,
     super.control,
     super.popoverControl,
     super.size,
@@ -80,6 +87,7 @@ class _PickerTimeField extends FTimeField implements FTimeFieldPickerProperties 
     super.autovalidateMode = .onUnfocus,
     super.forceErrorText,
     super.errorBuilder,
+    super.formFieldKey,
     super.key,
   }) : super._();
 
@@ -193,6 +201,7 @@ class _PickerTimeFieldState extends _FTimeFieldState<_PickerTimeField> {
     final localizations = FLocalizations.of(context) ?? FDefaultLocalizations();
 
     return PickerFormField(
+      key: widget.formFieldKey,
       controller: _controller,
       enabled: widget.enabled,
       onSaved: widget.onSaved,
@@ -286,6 +295,8 @@ class _PickerPopover extends StatelessWidget {
     offset: properties.offset,
     hideRegion: properties.hideRegion,
     groupId: properties.groupId,
+    cutout: properties.cutout,
+    cutoutBuilder: properties.cutoutBuilder,
     onTapHide: properties.onTapHide,
     autofocus: autofocus,
     shortcuts: {const SingleActivator(.escape): _hide},

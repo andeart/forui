@@ -17,6 +17,7 @@ final selectTileGroup = FSelectTileGroup<String>(
   forceErrorText: null,
   validator: (values) => null,
   errorBuilder: FFormFieldProperties.defaultErrorBuilder,
+  formFieldKey: null,
   // {@endcategory}
   // {@category "Scroll"}
   scrollController: null,
@@ -31,6 +32,7 @@ final selectTileGroup = FSelectTileGroup<String>(
   // {@category "Core"}
   style: const .delta(dividerWidth: 1),
   enabled: true,
+  intrinsicWidth: null,
   divider: .indented,
   children: const [
     .tile(title: Text('Apple'), value: 'apple'),
@@ -53,6 +55,7 @@ final selectTileGroupBuilder = FSelectTileGroup<String>.builder(
   forceErrorText: null,
   validator: (values) => null,
   errorBuilder: FFormFieldProperties.defaultErrorBuilder,
+  formFieldKey: null,
   // {@endcategory}
   // {@category "Scroll"}
   scrollController: null,

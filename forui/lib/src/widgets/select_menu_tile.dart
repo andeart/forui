@@ -132,6 +132,12 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
   /// {@macro forui.widgets.FPopover.groupId}
   final Object? menuGroupId;
 
+  /// {@macro forui.widgets.FPopover.cutout}
+  final bool menuCutout;
+
+  /// {@macro forui.widgets.FPopover.cutoutBuilder}
+  final void Function(Path path, Rect bounds) menuCutoutBuilder;
+
   /// True if the menu should be automatically hidden after a menu option is selected. Defaults to true.
   final bool autoHide;
 
@@ -217,6 +223,9 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
   @override
   final AutovalidateMode autovalidateMode;
 
+  /// {@macro forui.foundation.doc_templates.formFieldKey}
+  final Key? formFieldKey;
+
   final List<FSelectTile<T>>? _menu;
   final FSelectTile<T>? Function(BuildContext context, int index)? _menuBuilder;
   final int? _count;
@@ -247,6 +256,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.menuHideRegion = .excludeChild,
     this.menuOnTapHide,
     this.menuGroupId,
+    this.menuCutout = true,
+    this.menuCutoutBuilder = FModalBarrier.defaultCutoutBuilder,
     this.autoHide = true,
     this.label,
     this.description,
@@ -271,6 +282,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.forceErrorText,
     this.enabled = true,
     this.autovalidateMode = .disabled,
+    this.formFieldKey,
     super.key,
   }) : _menu = menu,
        _menuBuilder = null,
@@ -306,6 +318,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     FPopoverHideRegion menuHideRegion = .excludeChild,
     VoidCallback? menuOnTapHide,
     Object? menuGroupId,
+    bool menuCutout = true,
+    void Function(Path path, Rect bounds) menuCutoutBuilder = FModalBarrier.defaultCutoutBuilder,
     bool autoHide = true,
     Widget? label,
     Widget? description,
@@ -330,6 +344,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     String? forceErrorText,
     bool enabled = true,
     AutovalidateMode autovalidateMode = .disabled,
+    Key? formFieldKey,
     Key? key,
   }) => .new(
     title: title,
@@ -354,6 +369,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     menuHideRegion: menuHideRegion,
     menuOnTapHide: menuOnTapHide,
     menuGroupId: menuGroupId,
+    menuCutout: menuCutout,
+    menuCutoutBuilder: menuCutoutBuilder,
     autoHide: autoHide,
     label: label,
     description: description,
@@ -378,6 +395,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     forceErrorText: forceErrorText,
     enabled: enabled,
     autovalidateMode: autovalidateMode,
+    formFieldKey: formFieldKey,
     key: key,
   );
 
@@ -422,6 +440,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.menuHideRegion = .excludeChild,
     this.menuOnTapHide,
     this.menuGroupId,
+    this.menuCutout = true,
+    this.menuCutoutBuilder = FModalBarrier.defaultCutoutBuilder,
     this.autoHide = true,
     this.label,
     this.description,
@@ -446,6 +466,7 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
     this.forceErrorText,
     this.enabled = true,
     this.autovalidateMode = .disabled,
+    this.formFieldKey,
     super.key,
   }) : _menu = null,
        _menuBuilder = menuBuilder,
@@ -478,6 +499,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
       ..add(EnumProperty('menuHideRegion', menuHideRegion))
       ..add(ObjectFlagProperty.has('menuOnTapHide', menuOnTapHide))
       ..add(DiagnosticsProperty('menuGroupId', menuGroupId))
+      ..add(FlagProperty('menuCutout', value: menuCutout, ifTrue: 'cutout'))
+      ..add(ObjectFlagProperty.has('menuCutoutBuilder', menuCutoutBuilder))
       ..add(FlagProperty('autoHide', value: autoHide, ifTrue: 'autoHide'))
       ..add(ObjectFlagProperty.has('errorBuilder', errorBuilder))
       ..add(StringProperty('menuBarrierSemanticsLabel', menuBarrierSemanticsLabel))
@@ -501,7 +524,8 @@ class FSelectMenuTile<T> extends StatefulWidget with FTileMixin, FFormFieldPrope
       ..add(ObjectFlagProperty.has('validator', validator))
       ..add(StringProperty('forceErrorText', forceErrorText))
       ..add(FlagProperty('enabled', value: enabled, ifFalse: 'disabled'))
-      ..add(EnumProperty('autovalidateMode', autovalidateMode));
+      ..add(EnumProperty('autovalidateMode', autovalidateMode))
+      ..add(DiagnosticsProperty('formFieldKey', formFieldKey));
   }
 }
 
@@ -563,6 +587,7 @@ class _FSelectMenuTileState<T> extends State<FSelectMenuTile<T>> with TickerProv
         : selectMenuTileStyle.tileStyle;
 
     return MultiValueFormField<T>(
+      key: widget.formFieldKey,
       controller: _controller,
       enabled: widget.enabled,
       onSaved: widget.onSaved,
@@ -599,6 +624,8 @@ class _FSelectMenuTileState<T> extends State<FSelectMenuTile<T>> with TickerProv
           traversalEdgeBehavior: widget.menuTraversalEdgeBehavior,
           barrierSemanticsLabel: widget.menuBarrierSemanticsLabel,
           barrierSemanticsDismissible: widget.menuBarrierSemanticsDismissible,
+          cutout: widget.menuCutout,
+          cutoutBuilder: widget.menuCutoutBuilder,
           popoverBuilder: (_, _) {
             if (widget._menu case final menu?) {
               return FInheritedItemData(

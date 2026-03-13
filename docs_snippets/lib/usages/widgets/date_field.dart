@@ -19,6 +19,7 @@ final dateField = FDateField(
   autovalidateMode: .onUnfocus,
   forceErrorText: null,
   errorBuilder: FFormFieldProperties.defaultErrorBuilder,
+  formFieldKey: null,
   // {@endcategory}
   // {@category "Field"}
   textInputAction: null,
@@ -66,6 +67,7 @@ final calendar = FDateField.calendar(
   autovalidateMode: .onUnfocus,
   forceErrorText: null,
   errorBuilder: FFormFieldProperties.defaultErrorBuilder,
+  formFieldKey: null,
   // {@endcategory}
   // {@category "Field"}
   format: null,
@@ -82,6 +84,18 @@ final calendar = FDateField.calendar(
   suffixBuilder: null,
   // {@endcategory}
   // {@category "Calendar"}
+  anchor: .topLeft,
+  fieldAnchor: .bottomLeft,
+  spacing: const .spacing(4),
+  overflow: .flip,
+  offset: .zero,
+  useViewPadding: true,
+  useViewInsets: true,
+  hideRegion: .excludeChild,
+  groupId: null,
+  onTapHide: null,
+  cutout: true,
+  cutoutBuilder: FModalBarrier.defaultCutoutBuilder,
   popoverBuilder: (context, controller, popoverController, content) => content,
   dayBuilder: FCalendar.defaultDayBuilder,
   start: null,
@@ -89,14 +103,6 @@ final calendar = FDateField.calendar(
   today: null,
   initialType: .day,
   autoHide: true,
-  anchor: .topLeft,
-  fieldAnchor: .bottomLeft,
-  groupId: null,
-  spacing: const .spacing(4),
-  overflow: .flip,
-  offset: .zero,
-  hideRegion: .excludeChild,
-  onTapHide: null,
   // {@endcategory}
   // {@category "Accessibility"}
   autofocus: false,
@@ -121,6 +127,7 @@ final input = FDateField.input(
   autovalidateMode: .onUnfocus,
   forceErrorText: null,
   errorBuilder: FFormFieldProperties.defaultErrorBuilder,
+  formFieldKey: null,
   // {@endcategory}
   // {@category "Field"}
   textInputAction: null,

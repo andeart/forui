@@ -1,3 +1,14 @@
+## 0.20.2
+
+### `FSelectMenuTile`
+* Fix `FSelectMenuTile` not inheriting the primary tile style from the parent `FTileGroup`.
+
+
+### `FTileGroup`
+* Fix `FTileGroupStyle.tileStyles` type to `FTileStyles`.
+
+
+
 ## 0.20.1
 
 ### `FCalendar`
